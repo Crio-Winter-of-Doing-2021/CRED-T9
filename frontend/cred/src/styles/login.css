@@ -1,0 +1,19 @@
+.login-form {
+    margin: 5% auto;
+    max-width: 25%;
+}
+
+.login-form-heading {
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    justify-content: end;
+    padding-top: 10px;
+}
+
+.progressbar {
+    margin-top: 10px;
+}
