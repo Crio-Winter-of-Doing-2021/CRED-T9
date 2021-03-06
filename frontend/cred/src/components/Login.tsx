@@ -5,23 +5,22 @@ import { login } from '../actions/auth-action'
 import { bindActionCreators } from 'redux';
 import { RootState } from '../reducers';
 import { LoginState } from '../models/loginState';
+import { FormState } from '../models/formState'
 import { isEmailValid } from '../util/Utils'
 import { ProgressBar } from 'react-bootstrap';
 import "../styles/login.css"
 
-interface Prop {
+interface LoginProp {
     loginState: LoginState,
     history: any,
     login: (payload: any) => void
 }
 
-interface State {
-    fields: { [key: string]: string; },
-    errors: { [key: string]: string; },
-}
+const EMAIL = "email"
+const PASSWORD = "password"
 
-class Login extends Component<Prop, State> {
-    constructor(props: any) {
+class Login extends Component<LoginProp, FormState> {
+    constructor(props: LoginProp) {
         super(props)
         this.state = {
             fields: {},
@@ -40,8 +39,8 @@ class Login extends Component<Prop, State> {
             return
         }
         const payload = {
-            email: this.state.fields["email"],
-            password: this.state.fields["password"]
+            email: this.state.fields[EMAIL],
+            password: this.state.fields[PASSWORD]
         }
         this.props.login(payload)
     }
@@ -49,11 +48,11 @@ class Login extends Component<Prop, State> {
         let fields = this.state.fields;
         let errors = this.state.errors;
         let formValid = true;
-        if (!fields["email"] || !isEmailValid(fields["email"])) {
-            errors["email"] = "Invalid email";
+        if (!isEmailValid(fields[EMAIL])) {
+            errors[EMAIL] = "Invalid email";
             formValid = false;
-        } else if (!fields["password"]) {
-            errors["password"] = "Password cannot be empty";
+        } else if (!fields[PASSWORD]) {
+            errors[PASSWORD] = "Password cannot be empty";
             formValid = false;
         }
         if (!formValid) {
@@ -75,16 +74,16 @@ class Login extends Component<Prop, State> {
                         <Button variant="outline-primary" href="/signup">Signup</Button>
                     </Nav>
                 </Navbar>
-                <form className="login-form">
-                    <h4 className="login-form-heading">Sign In</h4>
+                <form className="form">
+                    <h4 className="login-form-heading">Login</h4>
                     <div className="form-group">
                         <label>Email address</label>
                         <input
                             type="email"
                             className="form-control"
                             placeholder="Enter email"
-                            onChange={this.handleChange.bind(this, "email")} />
-                        <span className="error-message">{this.state.errors["email"]}</span>
+                            onChange={this.handleChange.bind(this, EMAIL)} />
+                        <span className="error-message">{this.state.errors[EMAIL]}</span>
                     </div>
                     <div className="form-group">
                         <label>Password</label>
@@ -92,8 +91,8 @@ class Login extends Component<Prop, State> {
                             type="password"
                             className="form-control"
                             placeholder="Enter password"
-                            onChange={this.handleChange.bind(this, "password")} />
-                        <span className="error-message">{this.state.errors["password"]}</span>
+                            onChange={this.handleChange.bind(this, PASSWORD)} />
+                        <span className="error-message">{this.state.errors[PASSWORD]}</span>
                     </div>
                     <div className="form-group">
                         <div className="custom-control custom-checkbox">
@@ -116,7 +115,7 @@ class Login extends Component<Prop, State> {
     }
 }
 const mapStateToProps = (state: RootState) => {
-    return { loginState: state.loginReducer.loginState };
+    return { loginState: state.authReducer.loginState };
 };
 const mapDispatchToProps = (dispatch: any) => {
     return {
