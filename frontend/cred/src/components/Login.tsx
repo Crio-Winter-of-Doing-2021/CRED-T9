@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand, Button, Nav } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { login } from '../actions/login-action'
+import { login } from '../actions/auth-action'
 import { bindActionCreators } from 'redux';
 import { RootState } from '../reducers';
 import { LoginState } from '../models/loginState';

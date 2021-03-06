@@ -1,7 +1,8 @@
 import axios from "axios"
 
 export function loginApi(payload:any, success:(response:any) => any, error:(error:any) => any) {
-    axios.post("http://localhost:8000/login", payload)
+    const loginUrl = process.env.REACT_APP_API_BASE_URL + "login";
+    axios.post(loginUrl, payload)
         .then(res => success(res))
         .catch(err => error(err))
 }

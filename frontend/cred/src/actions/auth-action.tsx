@@ -1,5 +1,5 @@
 import { LOGIN_SUCCESS, LOGIN_FAILED, LOGIN_PROGRESS } from "../constants/action-types";
-import { loginApi } from '../services/login-service'
+import { loginApi } from '../services/auth-service'
 
 export function login(payload:any) {
     return function (dispatch:any) {
