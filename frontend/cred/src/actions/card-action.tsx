@@ -1,5 +1,6 @@
 import { FETCH_CARDS_PROGRESS, FETCH_CARDS_SUCCESS, FETCH_CARDS_FAILED } from "../constants/action-types";
-import { getAllCardsApi } from '../services/card-service'
+import { ADD_CARD_PROGRESS, ADD_CARD_SUCCESS, ADD_CARD_FAILED } from "../constants/action-types";
+import { getAllCardsApi, addCardApi } from '../services/card-service'
 
 export function getAllCards() {
     return function (dispatch:any) {
@@ -12,3 +13,13 @@ export function getAllCards() {
     }
 }
 
+export function addCard(payload: any) {
+    return function (dispatch:any) {
+        dispatch({type:ADD_CARD_PROGRESS, payload:""})
+        addCardApi(payload, (response: any) => {
+            dispatch({type:ADD_CARD_SUCCESS, payload:response})
+        }, (error:any) => {
+            dispatch({type:ADD_CARD_FAILED, payload:error.message})
+        })
+    }
+}

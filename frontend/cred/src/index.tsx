@@ -4,6 +4,7 @@ import './index.css';
 import App from './components/App';
 import Login from './components/Login';
 import Signup from './components/Signup'
+import AddNewCard from './components/AddNewCard'
 import reportWebVitals from './reportWebVitals';
 import { Provider } from "react-redux";
 import store from "./store/index";
@@ -15,6 +16,7 @@ ReactDOM.render(
         <Route exact path="/" component={App} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route path="/add-card" component={AddNewCard} />
       </Switch>
     </Router>
   </Provider>,
