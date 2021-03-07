@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { RootState } from '../reducers';
 import { withRouter } from "react-router";
 import { USER_TOKEN } from '../constants/store-constants'
+import ShowCards from './ShowCards'
 import "../styles/bootstrap.min.css";
 
 interface Prop {
@@ -12,10 +13,9 @@ class App extends Component<Prop> {
   render() {
     if(!localStorage.getItem(USER_TOKEN)) {
       this.props.history.replace('/login')
+      return null
     }
-    return(
-      <div>Dashboard</div>
-    )
+    return <ShowCards/>
   }
 }
 const mapStateToProps = (state: RootState) => {
