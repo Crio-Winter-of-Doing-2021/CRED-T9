@@ -2,13 +2,15 @@ package com.crio.cred.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 /**
  * The type User.
@@ -19,10 +21,11 @@ import javax.persistence.Table;
 @Table(name = "users")
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE users set is_active='f' where user_id=?", check = ResultCheckStyle.COUNT)
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @GeneratedValue
+    private UUID userId;
 
     @Column(nullable = false, unique = true)
     private String emailId;

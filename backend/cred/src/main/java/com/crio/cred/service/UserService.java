@@ -1,7 +1,5 @@
 package com.crio.cred.service;
 
-import com.crio.cred.dto.LoginDTO;
-import com.crio.cred.dto.LoginResponseDTO;
 import com.crio.cred.dto.SignUpDTO;
 import com.crio.cred.dto.UserDTO;
 import com.crio.cred.entity.User;
@@ -9,7 +7,6 @@ import com.crio.cred.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * The type User service.
@@ -32,8 +30,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     /**
      * Returns the user based on the email id.
@@ -54,28 +51,11 @@ public class UserService implements UserDetailsService {
                 .username(emailId)
                 .password(user.getPassword())
                 .authorities(Collections.emptySet())
-                .disabled(user.isActive())
+                .disabled(!user.isActive())
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
                 .build();
-    }
-
-    /**
-     * Login user optional.
-     *
-     * @param loginDTO the login dto
-     * @return the optional
-     */
-    public Optional<LoginResponseDTO> loginUser(LoginDTO loginDTO) {
-        logger.trace("Entered loginUser");
-        loginDTO.setPassword(passwordEncoder.encode(loginDTO.getPassword()));
-        Optional<User> optionalUser =
-                userRepository.findByEmailIdAndPassword(loginDTO.getEmailId(), loginDTO.getPassword());
-        modelMapper.getConfiguration().setFieldMatchingEnabled(false)
-                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE).setSkipNullEnabled(true);
-        logger.trace("Exited loginUser");
-        return optionalUser.map(user -> modelMapper.map(user, LoginResponseDTO.class));
     }
 
     /**
@@ -100,15 +80,34 @@ public class UserService implements UserDetailsService {
      * @param userId the user id
      * @return the user by id
      */
-    public Optional<UserDTO> getUserById(Long userId) {
+    public Optional<UserDTO> getUserById(UUID userId) {
         logger.trace("Entered getUserById");
         Optional<User> optionalUser = userRepository.findById(userId);
         logger.trace("Exited getUserById");
         return optionalUser.map(user -> modelMapper.map(user, UserDTO.class));
     }
 
+    public Optional<UserDTO> getUserByEmailId(String emailId) {
+        logger.trace("Entered getUserByEmailId");
+        Optional<User> optionalUser = userRepository.findByEmailId(emailId);
+        logger.trace("Exited getUserByEmailId");
+        return optionalUser.map(user -> modelMapper.map(user, UserDTO.class));
+    }
+
+
     /**
-     * Checks if user exists or not.
+     * Delete user by id.
+     *
+     * @param id the id
+     */
+    public void deleteUserById(UUID id) {
+        logger.trace("Entered deleteUserById");
+        userRepository.deleteById(id);
+        logger.trace("Exited deleteUserById");
+    }
+
+    /**
+     * Checks if user exists or not based on email id.
      *
      * @param emailId the email id
      * @return the boolean
@@ -117,4 +116,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmailId(emailId).isPresent();
     }
 
+    /**
+     * Checks if user exists or not based on userId.
+     *
+     * @param userId the user id
+     * @return the boolean
+     */
+    public boolean isUserExists(UUID userId) {
+        return userRepository.findById(userId).isPresent();
+    }
 }

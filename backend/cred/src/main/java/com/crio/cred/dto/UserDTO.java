@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * The type User dto.
  *
@@ -15,13 +18,14 @@ import org.springframework.lang.Nullable;
 @Setter
 @JsonInclude(Include.NON_NULL)
 public class UserDTO {
-    private Long userId;
+    private UUID userId;
     private String emailId;
     private String firstName;
     private String lastName;
     private String mobileNumber;
     @Nullable
-    private String token;
+    private Optional<String> token;
     @Nullable
-    private String tokenType;
+    private Optional<String> tokenType;
+    private boolean isActive;
 }

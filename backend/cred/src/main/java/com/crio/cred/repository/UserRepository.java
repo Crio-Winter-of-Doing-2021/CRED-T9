@@ -4,13 +4,14 @@ import com.crio.cred.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * The interface User repository.
  *
  * @author harikesh.pallantla
  */
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
     /**
      * Find by email id.
      *

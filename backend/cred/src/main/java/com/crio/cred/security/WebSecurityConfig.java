@@ -4,12 +4,9 @@ import com.crio.cred.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
-import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -81,24 +78,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         logger.trace("Entered configure authenticationMangerBuilder");
-        auth.authenticationProvider(daoAuthenticationProvider());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
         logger.trace("Exited configure authenticationMangerBuilder");
     }
 
-    /**
-     * Dao authentication provider dao authentication provider.
-     *
-     * @return the dao authentication provider
-     */
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        logger.trace("Entered daoAuthenticationProvider");
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userService);
-        logger.trace("Exited daoAuthenticationProvider");
-        return provider;
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }

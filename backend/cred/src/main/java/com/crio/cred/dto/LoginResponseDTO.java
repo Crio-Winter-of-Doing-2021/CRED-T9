@@ -2,7 +2,10 @@ package com.crio.cred.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 /**
  * The type Login response dto.
@@ -12,8 +15,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponseDTO {
-    private Long userId;
+    private UUID userId;
     private String emailId;
     private String token;
     private String tokenType;
