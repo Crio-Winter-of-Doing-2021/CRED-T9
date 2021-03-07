@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { login } from '../actions/auth-action'
 import { bindActionCreators } from 'redux';
 import { RootState } from '../reducers';
-import { LoginState } from '../models/loginState';
+import { LoginState } from '../models/authState';
 import { FormState } from '../models/formState'
 import { isEmailValid } from '../util/Utils'
 import { ProgressBar } from 'react-bootstrap';
@@ -39,7 +39,7 @@ class Login extends Component<LoginProp, FormState> {
             return
         }
         const payload = {
-            email: this.state.fields[EMAIL],
+            emailId: this.state.fields[EMAIL],
             password: this.state.fields[PASSWORD]
         }
         this.props.login(payload)

@@ -15,7 +15,7 @@ class App extends Component<Prop> {
       this.props.history.replace('/login')
       return null
     }
-    return <ShowCards/>
+    return <ShowCards history={this.props.history}/>
   }
 }
 const mapStateToProps = (state: RootState) => {
