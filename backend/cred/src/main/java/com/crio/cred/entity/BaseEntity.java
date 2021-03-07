@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @MappedSuperclass
 @Getter
 @Setter
-public class BaseEntity {
+public abstract class BaseEntity {
     /**
      * The creation time.
      */
