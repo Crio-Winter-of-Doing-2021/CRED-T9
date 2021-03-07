@@ -5,6 +5,7 @@ import com.crio.cred.dto.LoginDTO;
 import com.crio.cred.dto.LoginResponseDTO;
 import com.crio.cred.dto.SignUpDTO;
 import com.crio.cred.dto.UserDTO;
+import com.crio.cred.model.ErrorDetails;
 import com.crio.cred.security.JwtConfig;
 import com.crio.cred.security.JwtUtil;
 import com.crio.cred.service.UserService;
@@ -110,15 +111,16 @@ public class UserController {
      */
     @ApiResponses({
             @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "User created successfully.", response = UserDTO.class),
-            @ApiResponse(code = HttpServletResponse.SC_CONFLICT, message = "Email id already exists")
+            @ApiResponse(code = HttpServletResponse.SC_CONFLICT, message = "Email id already exists", response = ErrorDetails.class)
     })
     @ApiOperation(value = "Registers the user with the given details.", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> signUp(@Valid @RequestBody SignUpDTO signUpDTO) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDTO signUpDTO) {
         logger.trace("Entered signUp");
+
         if (userService.isUserExists(signUpDTO.getEmailId()))
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDetails(HttpStatus.CONFLICT, "Email id already exists."));
         Optional<UserDTO> signUpResponseDTO = userService.signUpUser(signUpDTO);
         if (signUpResponseDTO.isPresent()) {
             UserDTO user = signUpResponseDTO.get();
