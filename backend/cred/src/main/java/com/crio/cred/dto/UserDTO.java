@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -24,8 +23,8 @@ public class UserDTO {
     private String lastName;
     private String mobileNumber;
     @Nullable
-    private Optional<String> token;
+    private String token;
     @Nullable
-    private Optional<String> tokenType;
+    private String tokenType;
     private boolean isActive;
 }
