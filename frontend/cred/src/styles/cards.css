@@ -1,0 +1,21 @@
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-column {
+    display: flex;
+    justify-content: center;
+}
+
+.add-card-button {
+    margin-right: 20px !important;
+}
+
+.no-cards_available {
+    display: flex;
+    justify-content: center;
+    font-size: 24pt;
+    margin-top: 5%;
+}
