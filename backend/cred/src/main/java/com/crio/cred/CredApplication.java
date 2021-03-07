@@ -1,5 +1,7 @@
 package com.crio.cred;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -34,5 +36,13 @@ public class CredApplication {
     @Bean
     public Filter shallowEtagHeaderFilter() {
         return new ShallowEtagHeaderFilter();
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setFieldMatchingEnabled(false)
+                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE).setSkipNullEnabled(true);
+        return modelMapper;
     }
 }
