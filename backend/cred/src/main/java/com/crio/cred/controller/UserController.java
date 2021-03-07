@@ -5,6 +5,7 @@ import com.crio.cred.dto.LoginDTO;
 import com.crio.cred.dto.LoginResponseDTO;
 import com.crio.cred.dto.SignUpDTO;
 import com.crio.cred.dto.UserDTO;
+import com.crio.cred.security.JwtConfig;
 import com.crio.cred.security.JwtUtil;
 import com.crio.cred.service.UserService;
 import io.swagger.annotations.Api;
@@ -61,6 +62,7 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
+    private final JwtConfig jwtConfig;
 
     /**
      * Logs in the user.
@@ -87,7 +89,7 @@ public class UserController {
             if (userByEmailId.isPresent()) {
                 LoginResponseDTO loginResponseDTO =
                         modelMapper.map(userByEmailId.get(), LoginResponseDTO.class);
-                loginResponseDTO.setTokenType("Bearer");
+                loginResponseDTO.setTokenType(jwtConfig.getTokenPrefix().trim());
                 String jwtToken = jwtUtil.generateJwtToken(emailId);
                 loginResponseDTO.setToken(jwtToken);
                 logger.trace("Exited login");
@@ -121,8 +123,8 @@ public class UserController {
         if (signUpResponseDTO.isPresent()) {
             UserDTO user = signUpResponseDTO.get();
             String jwtToken = jwtUtil.generateJwtToken(user.getEmailId());
-            user.setToken(Optional.of(jwtToken));
-            user.setTokenType(Optional.of("Bearer"));
+            user.setToken(jwtToken);
+            user.setTokenType("Bearer");
             logger.trace("Exited signUp");
             return ResponseEntity.created(URI.create("/user/" + user.getUserId())).body(user);
         }
