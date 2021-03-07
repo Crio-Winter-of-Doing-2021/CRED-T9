@@ -7,7 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * The common properties for all entities are present in this class.
@@ -18,12 +18,16 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 public class BaseEntity {
-    /** The creation time. */
+    /**
+     * The creation time.
+     */
     @CreationTimestamp
     @Column(updatable = false)
-    private ZonedDateTime createdOn;
+    private OffsetDateTime createdOn;
 
-    /** The last updated time. */
+    /**
+     * The last updated time.
+     */
     @UpdateTimestamp
-    private ZonedDateTime lastUpdatedOn;
+    private OffsetDateTime lastUpdatedOn;
 }
