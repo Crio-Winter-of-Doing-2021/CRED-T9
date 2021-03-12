@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,8 +39,7 @@ public class SpringFoxConfig {
     /**
      * The Constant DEFAULT_PRODUCES_CONSUMES.
      */
-    private static final Set<String> DEFAULT_PRODUCES_CONSUMES =
-            new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_VALUE));
+    private static final Set<String> DEFAULT_PRODUCES_CONSUMES = Set.of(MediaType.APPLICATION_JSON_VALUE);
 
     /**
      * The constant USER_TAG.
@@ -78,8 +76,8 @@ public class SpringFoxConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.crio.cred")).build()
                 .tags(new Tag(USER_TAG, "User Operations"))
                 .apiInfo(apiInfo())
-                .securityContexts(Collections.singletonList(securityContext()))
-                .securitySchemes(Collections.singletonList(authenticationScheme))
+                .securityContexts(List.of(securityContext()))
+                .securitySchemes(List.of(authenticationScheme))
                 .produces(DEFAULT_PRODUCES_CONSUMES)
                 .consumes(DEFAULT_PRODUCES_CONSUMES)
                 .useDefaultResponseMessages(false)
@@ -132,7 +130,7 @@ public class SpringFoxConfig {
                 = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Collections.singletonList(new SecurityReference("JWT", authorizationScopes));
+        return List.of(new SecurityReference("JWT", authorizationScopes));
     }
 
     /**

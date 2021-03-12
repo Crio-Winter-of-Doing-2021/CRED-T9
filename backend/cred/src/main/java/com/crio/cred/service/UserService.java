@@ -14,8 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
                 .builder()
                 .username(emailId)
                 .password(user.getPassword())
-                .authorities(Collections.emptySet())
+                .authorities(Set.of())
                 .disabled(!user.isActive())
                 .accountExpired(false)
                 .accountLocked(false)
