@@ -31,7 +31,7 @@ const defaultState = {
   function authReducer(state = defaultState, action:any) {
     switch(action.type) {
       case LOGIN_SUCCESS:{
-        saveUserToken(action.payload)
+        saveUserToken(action.payload.data)
         const newState = {
           ...state.loginState
         }
@@ -70,7 +70,7 @@ const defaultState = {
         }
       }
       case SIGNUP_SUCCESS:{
-        saveUserToken(action.payload)
+        saveUserToken(action.payload.data)
         const newState = {
           ...state.signupState
         }
