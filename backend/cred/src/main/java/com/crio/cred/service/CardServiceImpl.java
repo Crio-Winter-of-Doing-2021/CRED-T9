@@ -3,6 +3,7 @@ package com.crio.cred.service;
 import com.crio.cred.dto.CardDTO;
 import com.crio.cred.entity.Card;
 import com.crio.cred.repository.CardRepository;
+import com.crio.cred.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Converter;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -37,5 +39,10 @@ public class CardServiceImpl implements CardService {
     @Override
     public Boolean cardExists(Long cardNumber) {
         return cardRepository.findByCardNumber(cardNumber).isPresent();
+    }
+
+    @Override
+    public List<CardDTO> getCards() {
+        return Utils.mapList(modelMapper, cardRepository.findAll(), CardDTO.class);
     }
 }
