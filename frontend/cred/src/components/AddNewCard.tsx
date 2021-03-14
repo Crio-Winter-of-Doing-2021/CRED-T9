@@ -44,8 +44,8 @@ class AddNewCard extends Component<AddCardProp, FormState> {
             cardNumber: this.state.fields[CARD_NUMBER],
             cvv: this.state.fields[CVV],
             expiry: this.state.fields[EXPIRY],
-            name: this.state.fields[NAME],
-            type: getCardType(this.state.fields[CARD_NUMBER])
+            nameOnCard: this.state.fields[NAME],
+            cardPaymentService: getCardType(this.state.fields[CARD_NUMBER])
         }
         this.props.addCard(payload)
     }
