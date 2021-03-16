@@ -4,6 +4,11 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.stream.Stream;
 
+/**
+ * The type Transaction type convertor.
+ *
+ * @author harikesh.pallantla
+ */
 @Converter(autoApply = true)
 public class TransactionTypeConvertor implements AttributeConverter<TransactionType, String> {
     /**

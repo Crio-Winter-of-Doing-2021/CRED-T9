@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * The interface Transactions repository.
+ *
+ * @author harikesh.pallantla
+ */
 @Repository
 public interface TransactionsRepository extends JpaRepository<Transactions, UUID> {
 }

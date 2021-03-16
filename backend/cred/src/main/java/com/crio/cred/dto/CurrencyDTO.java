@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The type Currency dto.
+ *
+ * @author harikesh.pallantla
+ */
 @Getter
 @Setter
 @AllArgsConstructor

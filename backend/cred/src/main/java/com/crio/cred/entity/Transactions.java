@@ -17,6 +17,11 @@ import java.time.OffsetDateTime;
 import java.util.Currency;
 import java.util.UUID;
 
+/**
+ * The type Transactions.
+ *
+ * @author harikesh.pallantla
+ */
 @Getter
 @Setter
 @Entity

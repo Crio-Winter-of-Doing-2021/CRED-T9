@@ -9,6 +9,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -19,6 +20,11 @@ import javax.persistence.UniqueConstraint;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The type Card details.
+ *
+ * @author harikesh.pallantla
+ */
 @Entity
 @Table(name = "card_details", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"card_nick_name", "user_id"})
@@ -57,6 +63,6 @@ public class CardDetails extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cardId")
+    @OneToMany(mappedBy = "cardId", fetch = FetchType.LAZY)
     private List<CardStatement> cardStatementList;
 }

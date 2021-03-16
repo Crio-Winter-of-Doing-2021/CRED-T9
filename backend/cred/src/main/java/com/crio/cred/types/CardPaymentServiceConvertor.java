@@ -4,6 +4,11 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.stream.Stream;
 
+/**
+ * The type Card payment service convertor.
+ *
+ * @author harikesh.pallantla
+ */
 @Converter(autoApply = true)
 public class CardPaymentServiceConvertor implements AttributeConverter<CardPaymentService, String> {
     /**
