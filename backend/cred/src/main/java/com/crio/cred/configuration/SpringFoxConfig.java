@@ -24,7 +24,6 @@ import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +44,11 @@ public class SpringFoxConfig {
      * The constant USER_TAG.
      */
     public static final String USER_TAG = "user";
+
+    /**
+     * The constant CARD_TAG.
+     */
+    public static final String CARD_TAG = "card";
 
     private final List<Response> globalResponses = Arrays.asList(
             new ResponseBuilder()
@@ -74,7 +78,8 @@ public class SpringFoxConfig {
     public Docket api() {
         return new Docket(DocumentationType.OAS_30).select()
                 .apis(RequestHandlerSelectors.basePackage("com.crio.cred")).build()
-                .tags(new Tag(USER_TAG, "User Operations"))
+                .tags(new Tag(USER_TAG, "User Operations"),
+                        new Tag(CARD_TAG, "Card Operations"))
                 .apiInfo(apiInfo())
                 .securityContexts(List.of(securityContext()))
                 .securitySchemes(List.of(authenticationScheme))
