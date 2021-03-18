@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -87,17 +90,21 @@ public class CardDetailsServiceImpl implements CardDetailsService {
     }
 
     @Override
-    public List<CardDTO> getAllCards() {
-        logger.trace("Entered getAllCards");
-        List<CardDetails> cardDetailsList = cardDetailsRepository.findAll();
-        List<CardDTO> cardDetails = Utils.mapList(modelMapper, cardDetailsList, CardDTO.class);
+    public Page<CardDTO> getAllCardsByCurrentUser(Pageable pageable) {
+        logger.trace("Entered getAllCardsByCurrentUser");
+        String emailId = jwtUtil.getEmailFromSecurity();
+        Optional<UserDTO> userDTO = userService.getUserByEmailId(emailId);
+        userDTO.orElseThrow(() -> new UsernameNotFoundException("Email address not found."));
+        User user = modelMapper.map(userDTO.get(), User.class);
+        Page<CardDetails> cardDetailsList = cardDetailsRepository.findAllByUser(user, pageable);
+        Page<CardDTO> cardDetails = Utils.mapEntityPageIntoDtoPage(modelMapper, cardDetailsList, CardDTO.class);
         for (CardDTO card : cardDetails) {
             CardStatementDTO outstandingStatement = cardStatementService.getOutstandingStatement(card.getCardId());
             card.setMinDue(outstandingStatement.getMinDue());
             card.setTotalDue(outstandingStatement.getTotalDue());
             card.setDueDate(outstandingStatement.getDueDate());
         }
-        logger.trace("Exited getAllCards");
+        logger.trace("Exited getAllCardsByCurrentUser");
         return cardDetails;
     }
 

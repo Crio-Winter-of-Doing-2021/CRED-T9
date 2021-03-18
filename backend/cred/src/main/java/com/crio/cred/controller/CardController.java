@@ -1,5 +1,6 @@
 package com.crio.cred.controller;
 
+import com.crio.cred.annotation.ApiPageable;
 import com.crio.cred.configuration.SpringFoxConfig;
 import com.crio.cred.dto.AddCardDTO;
 import com.crio.cred.dto.CardDTO;
@@ -15,6 +16,9 @@ import io.swagger.annotations.SwaggerDefinition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +29,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -84,21 +88,22 @@ public class CardController {
     }
 
     /**
-     * Gets the list of all cards.
+     * Gets the list of all cards of the logged in user.
      *
      * @return the response entity
      */
     @ApiResponses({
             @ApiResponse(code = HttpServletResponse.SC_OK, message = "Cards returned successfully.",
-                    response = CardDTO.class)
+                    response = Page.class)
     })
-    @ApiOperation(value = "Gets the list of all cards", produces = MediaType.APPLICATION_JSON_VALUE,
+    @ApiOperation(value = "Gets the list of all cards of the logged in user.", produces = MediaType.APPLICATION_JSON_VALUE,
             authorizations = {@Authorization("JWT")})
     @GetMapping(value = "/cards", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getCards() {
-        logger.trace("Entered getCards");
-        List<CardDTO> cards = cardDetailsService.getAllCards();
-        logger.trace("Exited getCards");
+    @ApiPageable
+    public ResponseEntity<?> getAllCardsByCurrentUser(@PageableDefault @ApiIgnore Pageable pageable) {
+        logger.trace("Entered getAllCardsByCurrentUser");
+        Page<CardDTO> cards = cardDetailsService.getAllCardsByCurrentUser(pageable);
+        logger.trace("Exited getAllCardsByCurrentUser");
         return ResponseEntity.ok(cards);
     }
 

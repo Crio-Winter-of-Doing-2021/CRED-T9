@@ -2,6 +2,8 @@ package com.crio.cred.service;
 
 import com.crio.cred.dto.AddCardDTO;
 import com.crio.cred.dto.CardDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,12 +31,13 @@ public interface CardDetailsService {
      */
     Boolean isCardPresent(String cardNumber);
 
+
     /**
-     * Gets all cards.
+     * Gets all cards of the logged in user.
      *
-     * @return the all cards
+     * @return the all cards of the current user
      */
-    List<CardDTO> getAllCards();
+    Page<CardDTO> getAllCardsByCurrentUser(Pageable pageable);
 
     /**
      * Gets card by number.

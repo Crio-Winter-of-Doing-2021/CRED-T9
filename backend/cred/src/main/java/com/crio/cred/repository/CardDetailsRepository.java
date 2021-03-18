@@ -1,9 +1,13 @@
 package com.crio.cred.repository;
 
 import com.crio.cred.entity.CardDetails;
+import com.crio.cred.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,4 +27,6 @@ public interface CardDetailsRepository extends JpaRepository<CardDetails, UUID> 
      * @return the card details if found.
      */
     Optional<CardDetails> findByCardNumber(String cardNumber);
+
+    Page<CardDetails> findAllByUser(User user, Pageable pageable);
 }
