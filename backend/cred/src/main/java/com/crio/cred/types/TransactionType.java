@@ -14,11 +14,11 @@ public enum TransactionType {
     /**
      * Debit transaction type.
      */
-    DEBIT("D"),
+    DEBIT("debit"),
     /**
      * Credit transaction type.
      */
-    CREDIT("C");
+    CREDIT("credit");
 
     private final String code;
 }
