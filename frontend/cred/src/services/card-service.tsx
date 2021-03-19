@@ -10,12 +10,18 @@ export function getAllCardsApi(success:(response:any) => any, error:(error:any) 
 }
 
 export function addCardApi(payload: any, success:(response:any) => any, error:(error:any) => any) {
-    let config = {
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem(USER_TOKEN)
-        }
-      }
-    axios.post(baseUrl + "cards", payload, config)
+    axios.post(baseUrl + "cards", payload, getConfig())
         .then(res => success(res))
         .catch(err => error(err))
+}
+
+export function getStatementApi(id: number, year: number, month: number, 
+  success:(response:any) => any, error:(error:any) => any) {
+    axios.get(baseUrl + "cards/"+id+"/statements/"+year+"/"+month, getConfig())
+        .then(res => success(res))
+        .catch(err => error(err))
+  }
+
+function getConfig() {
+  return { headers: { 'Authorization': 'Bearer ' + localStorage.getItem(USER_TOKEN) } }
 }
