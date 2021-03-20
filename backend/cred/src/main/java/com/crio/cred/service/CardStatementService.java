@@ -22,6 +22,14 @@ public interface CardStatementService {
     Optional<CardStatementDTO> addCardStatement(AddCardStatementDTO addCardStatementDTO);
 
     /**
+     * Update card statement.
+     *
+     * @param cardStatementDTO the card statement dto
+     * @return the card statement dto
+     */
+    CardStatementDTO updateCardStatement(CardStatementDTO cardStatementDTO);
+
+    /**
      * Gets card statement.
      *
      * @return the card statement

@@ -8,6 +8,7 @@ import com.crio.cred.model.ErrorDetails;
 import com.crio.cred.service.CardDetailsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
@@ -94,7 +95,7 @@ public class CardController {
      */
     @ApiResponses({
             @ApiResponse(code = HttpServletResponse.SC_OK, message = "Cards returned successfully.",
-                    response = Page.class)
+                    response = CardDTO.class)
     })
     @ApiOperation(value = "Gets the list of all cards of the logged in user.", produces = MediaType.APPLICATION_JSON_VALUE,
             authorizations = {@Authorization("JWT")})
@@ -114,7 +115,9 @@ public class CardController {
     @ApiOperation(value = "Gets the card by card id.", produces = MediaType.APPLICATION_JSON_VALUE,
             authorizations = {@Authorization("JWT")})
     @GetMapping(value = "/cards/{cardId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getCardById(@PathVariable UUID cardId) {
+    public ResponseEntity<?> getCardById(@PathVariable
+                                         @ApiParam(value = "credit card id", readOnly = true)
+                                                 UUID cardId) {
         logger.trace("Entered getCardById");
         Optional<CardDTO> cardByNumber = cardDetailsService.getCardByNumber(cardId);
         if (cardByNumber.isPresent()) {

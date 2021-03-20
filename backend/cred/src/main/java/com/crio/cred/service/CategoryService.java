@@ -19,6 +19,14 @@ public interface CategoryService {
     Category addCategory(String categoryName);
 
     /**
+     * Gets or adds the category.
+     *
+     * @param categoryName the category name
+     * @return the or add category
+     */
+    Category getOrAddCategory(String categoryName);
+
+    /**
      * Gets category by name.
      *
      * @param categoryName the category

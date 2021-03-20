@@ -1,0 +1,138 @@
+package com.crio.cred.controller;
+
+import com.crio.cred.annotation.ApiPageable;
+import com.crio.cred.configuration.SpringFoxConfig;
+import com.crio.cred.dto.AddTransactionDTO;
+import com.crio.cred.dto.TransactionDTO;
+import com.crio.cred.model.ErrorDetails;
+import com.crio.cred.service.CardDetailsService;
+import com.crio.cred.service.TransactionService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@Validated
+@Slf4j
+@CrossOrigin
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Api(tags = SpringFoxConfig.CARD_TAG)
+@SwaggerDefinition(
+        info = @Info(description = "Transaction Operations", title = "Transaction Controller", version = "1.0")
+)
+public class TransactionController {
+    private final TransactionService transactionService;
+    private final CardDetailsService cardDetailsService;
+
+    @ApiOperation(value = "Adds a single transaction to the credit card.", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE, authorizations = {@Authorization("JWT")})
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Successfully added the transaction",
+                    response = TransactionDTO.class),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Credit card not found.",
+                    response = ErrorDetails.class)
+    })
+    @PostMapping(value = "/cards/{id}/transaction", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addTransaction(@PathVariable(value = "id")
+                                            @ApiParam(value = "credit card id", readOnly = true)
+                                                    UUID cardId,
+                                            @RequestBody @Valid AddTransactionDTO addTransactionDTO) {
+        if (cardId == null)
+            return ResponseEntity.badRequest().body(
+                    new ErrorDetails(HttpStatus.BAD_REQUEST, "Card Id is mandatory.")
+            );
+        if (!cardDetailsService.isCardPresent(cardId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
+            );
+        }
+        TransactionDTO transactionDTO = transactionService.addTransaction(cardId, addTransactionDTO);
+        return ResponseEntity.created(URI.create("/transaction/" + transactionDTO.getTransactionId())).body(transactionDTO);
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Successfully added the statement.",
+                    response = TransactionDTO.class),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Credit card not found.",
+                    response = ErrorDetails.class)
+    })
+    @ApiOperation(value = "Adds transactions to the specified credit card.", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE, authorizations = {@Authorization("JWT")})
+    @PostMapping(value = "/cards/{id}/statements/{year}/{month}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addTransactionStatement(@PathVariable(value = "id")
+                                                     @ApiParam(value = "credit card id", readOnly = true)
+                                                             UUID cardId,
+                                                     @PathVariable int month,
+                                                     @PathVariable int year,
+                                                     @RequestBody @Valid List<AddTransactionDTO> transactions) {
+        if (!cardDetailsService.isCardPresent(cardId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
+            );
+        }
+        List<TransactionDTO> transactionDTOS = transactionService.addTransactionStatement(cardId, month, year, transactions);
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionDTOS);
+    }
+
+
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Successfully found the card statement.",
+                    response = TransactionDTO.class),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Credit card not found.",
+                    response = ErrorDetails.class)
+    })
+    @ApiOperation(value = "Gets the credit card statement of the given month and year.",
+            produces = MediaType.APPLICATION_JSON_VALUE, authorizations = {@Authorization("JWT")})
+    @GetMapping(value = "/cards/{id}/statements/{year}/{month}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiPageable
+    public ResponseEntity<?> getTransactionStatement(@PathVariable(value = "id")
+                                                     @ApiParam(value = "credit card id", readOnly = true)
+                                                             UUID cardId,
+                                                     @PathVariable int month,
+                                                     @PathVariable int year,
+                                                     @PageableDefault @ApiIgnore Pageable pageable) {
+        logger.trace("Entered getTransactionStatement");
+        if (!cardDetailsService.isCardPresent(cardId)) {
+            logger.debug("Credit Card with id {} not found.", cardId);
+            logger.trace("Exited getTransactionStatement");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
+            );
+        }
+        Page<TransactionDTO> statement =
+                transactionService.getTransactionStatement(cardId, month, year, pageable);
+        logger.trace("Exited getTransactionStatement");
+        return ResponseEntity.ok(statement);
+    }
+}

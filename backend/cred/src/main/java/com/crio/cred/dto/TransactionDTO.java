@@ -4,27 +4,19 @@ import com.crio.cred.types.TransactionType;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
-public class AddTransactionDTO {
-    @NotNull(message = "Amount is mandatory.")
+public class TransactionDTO {
+    private UUID transactionId;
     private BigDecimal amount;
-
-    private String currency = "INR";
-
+    private String currency;
     private TransactionType transactionType;
-
-    @NotNull(message = "Transaction date is mandatory.")
     private OffsetDateTime transactionDate;
-
-    @NotBlank(message = "Category is mandatory.")
     private String category;
-
-    @NotBlank(message = "Vendor is mandatory.")
     private String vendor;
+    private UUID cardStatementId;
 }

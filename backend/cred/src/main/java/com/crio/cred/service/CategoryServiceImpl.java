@@ -34,6 +34,25 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * Gets or adds the category.
+     *
+     * @param categoryName the category name
+     * @return the or add category
+     */
+    @Override
+    public Category getOrAddCategory(String categoryName) {
+        logger.trace("Entered getOrAddCategory");
+        Optional<Category> getCategory = getCategoryByName(categoryName);
+        if (getCategory.isPresent()) {
+            logger.trace("Exited getOrAddCategory");
+            return getCategory.get();
+        }
+        Category category = addCategory(categoryName);
+        logger.trace("Exited getOrAddCategory");
+        return category;
+    }
+
+    /**
      * Gets category by name.
      *
      * @param categoryName the category

@@ -20,6 +20,7 @@ public class CardStatementDTO {
     private UUID cardStatementId;
     private BigDecimal minDue;
     private BigDecimal totalDue;
+    private BigDecimal maxAmount;
     private OffsetDateTime dueDate;
     private UUID cardId;
     private List<Transactions> transactions;

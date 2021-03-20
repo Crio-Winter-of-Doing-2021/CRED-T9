@@ -41,6 +41,22 @@ public class CardStatementServiceImpl implements CardStatementService {
         return Optional.of(cardStatementDTO);
     }
 
+    /**
+     * Update card statement.
+     *
+     * @param cardStatementDTO the card statement dto
+     * @return the card statement dto
+     */
+    @Override
+    public CardStatementDTO updateCardStatement(CardStatementDTO cardStatementDTO) {
+        logger.trace("Entered updateCardStatement");
+        CardStatement cardStatement = modelMapper.map(cardStatementDTO, CardStatement.class);
+        CardStatement savedCardStatement = cardStatementRepository.save(cardStatement);
+        CardStatementDTO updatedCardStatementDTO = modelMapper.map(savedCardStatement, CardStatementDTO.class);
+        logger.trace("Exited updateCardStatement");
+        return updatedCardStatementDTO;
+    }
+
     @Override
     public List<CardStatementDTO> getCardStatement() {
         return Utils.mapList(modelMapper, cardStatementRepository.findAll(), CardStatementDTO.class);
@@ -53,7 +69,9 @@ public class CardStatementServiceImpl implements CardStatementService {
         cardDetails.orElseThrow(() -> new IllegalArgumentException("Card Id not found."));
         CardStatement outstandingStatement =
                 cardStatementRepository.findCardStatementBySettleDateIsNullAndCardId(cardDetails.get());
+        CardStatementDTO cardStatementDTO = modelMapper.map(outstandingStatement, CardStatementDTO.class);
+        cardStatementDTO.setCardId(cardId);
         logger.trace("Exited getOutstandingStatement");
-        return modelMapper.map(outstandingStatement, CardStatementDTO.class);
+        return cardStatementDTO;
     }
 }

@@ -19,6 +19,14 @@ public interface VendorService {
     Vendor addVendor(String vendorName);
 
     /**
+     * Get or add the vendor.
+     *
+     * @param vendorName the vendor name
+     * @return the vendor
+     */
+    Vendor getOrAddVendor(String vendorName);
+
+    /**
      * Gets vendor by name.
      *
      * @param vendorName the vendor name

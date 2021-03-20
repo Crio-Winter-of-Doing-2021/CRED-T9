@@ -34,6 +34,25 @@ public class VendorServiceImpl implements VendorService {
     }
 
     /**
+     * Get or add the vendor.
+     *
+     * @param vendorName the vendor name
+     * @return the vendor
+     */
+    @Override
+    public Vendor getOrAddVendor(String vendorName) {
+        logger.trace("Entered getOrAddVendor");
+        Optional<Vendor> vendorByName = getVendorByName(vendorName);
+        if (vendorByName.isPresent()) {
+            logger.trace("Exited getOrAddVendor");
+            return vendorByName.get();
+        }
+        Vendor vendor = addVendor(vendorName);
+        logger.trace("Exited getOrAddVendor");
+        return vendor;
+    }
+
+    /**
      * Gets vendor by name.
      *
      * @param vendorName the vendor name

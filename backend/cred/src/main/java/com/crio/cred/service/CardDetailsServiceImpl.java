@@ -89,6 +89,11 @@ public class CardDetailsServiceImpl implements CardDetailsService {
     }
 
     @Override
+    public Boolean isCardPresent(UUID cardId) {
+        return cardDetailsRepository.findById(cardId).isPresent();
+    }
+
+    @Override
     public Page<CardDTO> getAllCardsByCurrentUser(Pageable pageable) {
         logger.trace("Entered getAllCardsByCurrentUser");
         String emailId = jwtUtil.getEmailFromSecurity();

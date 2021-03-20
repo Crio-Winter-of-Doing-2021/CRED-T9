@@ -30,6 +30,14 @@ public interface CardDetailsService {
      */
     Boolean isCardPresent(String cardNumber);
 
+    /**
+     * Checks if card is present or not with the given card id.
+     *
+     * @param cardId the card id
+     * @return the boolean
+     */
+    Boolean isCardPresent(UUID cardId);
+
 
     /**
      * Gets all cards of the logged in user.
