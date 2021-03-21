@@ -42,13 +42,12 @@ public class ExceptionTracer extends ResponseEntityExceptionHandler {
     /**
      * Handle method argument type mismatch.
      *
-     * @param ex      the ex
-     * @param request the request
+     * @param ex the ex
      * @return the response entity
      */
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(
-            MethodArgumentTypeMismatchException ex, WebRequest request) {
+            MethodArgumentTypeMismatchException ex) {
         String error = ex.getName() + " should be of type " + Objects.requireNonNull(ex.getRequiredType()).getName();
 
         ErrorDetails errorDetails =
