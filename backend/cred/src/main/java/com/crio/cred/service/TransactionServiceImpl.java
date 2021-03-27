@@ -5,6 +5,7 @@ import com.crio.cred.entity.CardStatement;
 import com.crio.cred.entity.Category;
 import com.crio.cred.entity.Transactions;
 import com.crio.cred.entity.Vendor;
+import com.crio.cred.exception.LimitExceededException;
 import com.crio.cred.repository.TransactionsRepository;
 import com.crio.cred.types.TransactionType;
 import com.crio.cred.util.Utils;
@@ -47,7 +48,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     @Transactional
-    public TransactionDTO addTransaction(UUID cardId, AddTransactionDTO addTransactionDTO) {
+    public TransactionDTO addTransaction(UUID cardId, AddTransactionDTO addTransactionDTO) throws LimitExceededException {
         logger.trace("Entered addTransaction");
         CardStatementDTO statementDTO =
                 cardStatementService.getOutstandingStatement(cardId);
@@ -55,6 +56,10 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal totalDue = statementDTO.getTotalDue();
         totalDue = totalDue.add(addTransactionDTO.getAmount());
         statementDTO.setTotalDue(totalDue);
+        if (totalDue.compareTo(statementDTO.getMaxAmount()) > 0) {
+            throw new LimitExceededException("Maximum limit of the credit card is exceeded.");
+        }
+
         cardStatementService.updateCardStatement(statementDTO);
 
         Transactions transaction = modelMapper.map(addTransactionDTO, Transactions.class);
@@ -137,7 +142,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public List<TransactionDTO> addTransactionStatement(UUID cardId, int month, int year,
-                                                        List<AddTransactionDTO> transactions) {
+                                                        List<AddTransactionDTO> transactions) throws LimitExceededException {
         logger.trace("Entered addTransactionStatement");
         logger.debug("Transactions count: " + transactions.size());
         List<TransactionDTO> addedTransactions = new ArrayList<>();

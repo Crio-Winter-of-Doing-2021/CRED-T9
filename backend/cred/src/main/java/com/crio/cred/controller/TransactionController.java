@@ -5,6 +5,7 @@ import com.crio.cred.configuration.SpringFoxConfig;
 import com.crio.cred.dto.AddTransactionDTO;
 import com.crio.cred.dto.PaymentTransactionDTO;
 import com.crio.cred.dto.TransactionDTO;
+import com.crio.cred.exception.LimitExceededException;
 import com.crio.cred.model.ErrorDetails;
 import com.crio.cred.service.CardDetailsService;
 import com.crio.cred.service.TransactionService;
@@ -64,7 +65,13 @@ public class TransactionController {
                     new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
             );
         }
-        TransactionDTO transactionDTO = transactionService.addTransaction(cardId, addTransactionDTO);
+        TransactionDTO transactionDTO;
+        try {
+            transactionDTO = transactionService.addTransaction(cardId, addTransactionDTO);
+        } catch (LimitExceededException e) {
+            ErrorDetails details = new ErrorDetails(HttpStatus.OK, e.getMessage());
+            return ResponseEntity.ok(details);
+        }
         return ResponseEntity.created(URI.create("/transaction/" + transactionDTO.getTransactionId()))
                 .body(transactionDTO);
     }
@@ -115,7 +122,13 @@ public class TransactionController {
                     new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
             );
         }
-        List<TransactionDTO> transactionDTOS = transactionService.addTransactionStatement(cardId, month, year, transactions);
+        List<TransactionDTO> transactionDTOS;
+        try {
+            transactionDTOS = transactionService.addTransactionStatement(cardId, month, year, transactions);
+        } catch (LimitExceededException e) {
+            ErrorDetails details = new ErrorDetails(HttpStatus.OK, e.getMessage());
+            return ResponseEntity.ok(details);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(transactionDTOS);
     }
 

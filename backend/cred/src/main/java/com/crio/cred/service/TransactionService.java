@@ -3,6 +3,7 @@ package com.crio.cred.service;
 import com.crio.cred.dto.AddTransactionDTO;
 import com.crio.cred.dto.PaymentTransactionDTO;
 import com.crio.cred.dto.TransactionDTO;
+import com.crio.cred.exception.LimitExceededException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,7 +22,7 @@ public interface TransactionService {
      * @param addTransactionDTO the add transaction dto
      * @return the transaction dto
      */
-    TransactionDTO addTransaction(UUID cardId, AddTransactionDTO addTransactionDTO);
+    TransactionDTO addTransaction(UUID cardId, AddTransactionDTO addTransactionDTO) throws LimitExceededException;
 
     /**
      * Add payment transaction.
@@ -42,7 +43,7 @@ public interface TransactionService {
      * @return the list
      */
     List<TransactionDTO> addTransactionStatement(UUID cardId, int month, int year,
-                                                 List<AddTransactionDTO> transactions);
+                                                 List<AddTransactionDTO> transactions) throws LimitExceededException;
 
     /**
      * Gets transaction statement.
