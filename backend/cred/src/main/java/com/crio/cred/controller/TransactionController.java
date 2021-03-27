@@ -3,18 +3,12 @@ package com.crio.cred.controller;
 import com.crio.cred.annotation.ApiPageable;
 import com.crio.cred.configuration.SpringFoxConfig;
 import com.crio.cred.dto.AddTransactionDTO;
+import com.crio.cred.dto.PaymentTransactionDTO;
 import com.crio.cred.dto.TransactionDTO;
 import com.crio.cred.model.ErrorDetails;
 import com.crio.cred.service.CardDetailsService;
 import com.crio.cred.service.TransactionService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
@@ -63,7 +52,7 @@ public class TransactionController {
     @PostMapping(value = "/cards/{id}/transaction", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addTransaction(@PathVariable(value = "id")
-                                            @ApiParam(value = "credit card id", readOnly = true)
+                                            @ApiParam(value = "credit card id", required = true)
                                                     UUID cardId,
                                             @RequestBody @Valid AddTransactionDTO addTransactionDTO) {
         if (cardId == null)
@@ -76,7 +65,33 @@ public class TransactionController {
             );
         }
         TransactionDTO transactionDTO = transactionService.addTransaction(cardId, addTransactionDTO);
-        return ResponseEntity.created(URI.create("/transaction/" + transactionDTO.getTransactionId())).body(transactionDTO);
+        return ResponseEntity.created(URI.create("/transaction/" + transactionDTO.getTransactionId()))
+                .body(transactionDTO);
+    }
+
+    @PostMapping(value = "/cards/{id}/pay", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addPayment(@PathVariable(value = "id")
+                                        @ApiParam(value = "credit card id", required = true)
+                                                UUID cardId,
+                                        @RequestBody @Valid PaymentTransactionDTO paymentTransactionDTO) {
+        logger.trace("Entered addPayment");
+        if (cardId == null) {
+            logger.trace("Exited addPayment");
+            return ResponseEntity.badRequest().body(
+                    new ErrorDetails(HttpStatus.BAD_REQUEST, "Card Id is mandatory.")
+            );
+        }
+        if (!cardDetailsService.isCardPresent(cardId)) {
+            logger.trace("Exited addPayment");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
+            );
+        }
+        TransactionDTO transactionDTO = transactionService.addPayment(cardId, paymentTransactionDTO);
+        logger.trace("Exited addPayment");
+        return ResponseEntity.created(URI.create("/transaction/" + transactionDTO.getTransactionId()))
+                .body(transactionDTO);
     }
 
     @ApiResponses({

@@ -6,14 +6,7 @@ import com.crio.cred.dto.AddCardDTO;
 import com.crio.cred.dto.CardDTO;
 import com.crio.cred.model.ErrorDetails;
 import com.crio.cred.service.CardDetailsService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
@@ -119,7 +107,7 @@ public class CardController {
                                          @ApiParam(value = "credit card id", readOnly = true)
                                                  UUID cardId) {
         logger.trace("Entered getCardById");
-        Optional<CardDTO> cardByNumber = cardDetailsService.getCardByNumber(cardId);
+        Optional<CardDTO> cardByNumber = cardDetailsService.getCardById(cardId);
         if (cardByNumber.isPresent()) {
             logger.trace("Exited getCardById");
             return ResponseEntity.ok(cardByNumber.get());

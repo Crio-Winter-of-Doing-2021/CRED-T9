@@ -1,6 +1,7 @@
 package com.crio.cred.service;
 
 import com.crio.cred.dto.AddTransactionDTO;
+import com.crio.cred.dto.PaymentTransactionDTO;
 import com.crio.cred.dto.TransactionDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,15 @@ public interface TransactionService {
      * @return the transaction dto
      */
     TransactionDTO addTransaction(UUID cardId, AddTransactionDTO addTransactionDTO);
+
+    /**
+     * Add payment transaction.
+     *
+     * @param cardId                the card id
+     * @param paymentTransactionDTO the payment transaction dto
+     * @return the transaction dto
+     */
+    TransactionDTO addPayment(UUID cardId, PaymentTransactionDTO paymentTransactionDTO);
 
     /**
      * Add transaction statement list.

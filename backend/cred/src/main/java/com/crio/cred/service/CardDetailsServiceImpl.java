@@ -1,10 +1,6 @@
 package com.crio.cred.service;
 
-import com.crio.cred.dto.AddCardDTO;
-import com.crio.cred.dto.AddCardStatementDTO;
-import com.crio.cred.dto.CardDTO;
-import com.crio.cred.dto.CardStatementDTO;
-import com.crio.cred.dto.UserDTO;
+import com.crio.cred.dto.*;
 import com.crio.cred.entity.CardDetails;
 import com.crio.cred.entity.User;
 import com.crio.cred.repository.CardDetailsRepository;
@@ -113,7 +109,7 @@ public class CardDetailsServiceImpl implements CardDetailsService {
     }
 
     @Override
-    public Optional<CardDTO> getCardByNumber(UUID cardId) {
+    public Optional<CardDTO> getCardById(UUID cardId) {
         logger.trace("Entered getCardByNumber");
         Optional<CardDetails> cardDetailsOptional = cardDetailsRepository.findById(cardId);
         if (cardDetailsOptional.isPresent()) {

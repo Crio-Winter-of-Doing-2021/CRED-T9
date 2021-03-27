@@ -47,10 +47,10 @@ public interface CardDetailsService {
     Page<CardDTO> getAllCardsByCurrentUser(Pageable pageable);
 
     /**
-     * Gets card by number.
+     * Gets card by id.
      *
      * @param cardId the card id
-     * @return the card by number
+     * @return the card by id
      */
-    Optional<CardDTO> getCardByNumber(UUID cardId);
+    Optional<CardDTO> getCardById(UUID cardId);
 }

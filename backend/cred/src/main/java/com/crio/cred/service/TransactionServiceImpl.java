@@ -1,13 +1,12 @@
 package com.crio.cred.service;
 
-import com.crio.cred.dto.AddTransactionDTO;
-import com.crio.cred.dto.CardStatementDTO;
-import com.crio.cred.dto.TransactionDTO;
+import com.crio.cred.dto.*;
 import com.crio.cred.entity.CardStatement;
 import com.crio.cred.entity.Category;
 import com.crio.cred.entity.Transactions;
 import com.crio.cred.entity.Vendor;
 import com.crio.cred.repository.TransactionsRepository;
+import com.crio.cred.types.TransactionType;
 import com.crio.cred.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +79,51 @@ public class TransactionServiceImpl implements TransactionService {
         Transactions savedTransaction = transactionsRepository.save(transaction);
         logger.trace("Exited addTransaction");
         return modelMapper.map(savedTransaction, TransactionDTO.class);
+    }
+
+    /**
+     * Add payment transaction.
+     *
+     * @param cardId                the card id
+     * @param paymentTransactionDTO the payment transaction dto
+     * @return the transaction dto
+     */
+    @Override
+    @Transactional
+    public TransactionDTO addPayment(UUID cardId, PaymentTransactionDTO paymentTransactionDTO) {
+        logger.trace("Entered addPayment");
+        CardStatementDTO statementDTO =
+                cardStatementService.getOutstandingStatement(cardId);
+        CardStatement cardStatement = modelMapper.map(statementDTO, CardStatement.class);
+        BigDecimal totalDue = statementDTO.getTotalDue();
+        totalDue = totalDue.subtract(paymentTransactionDTO.getAmount());
+        statementDTO.setTotalDue(totalDue);
+        statementDTO.setSettleDate(OffsetDateTime.now());
+        cardStatementService.updateCardStatement(statementDTO);
+
+        Transactions transaction = modelMapper.map(paymentTransactionDTO, Transactions.class);
+        transaction.setTransactionType(TransactionType.DEBIT);
+        transaction.setTransactionDate(OffsetDateTime.now());
+        transaction.setCardStatementId(cardStatement);
+
+        try {
+            Currency currency = Currency.getInstance(paymentTransactionDTO.getCurrency());
+            transaction.setCurrency(currency);
+        } catch (IllegalArgumentException | NullPointerException exception) {
+            logger.error("Invalid currency code.");
+            throw new IllegalArgumentException("Invalid Currency Code.");
+        }
+
+        Transactions savedTransaction = transactionsRepository.save(transaction);
+        TransactionDTO transactionDTO = modelMapper.map(savedTransaction, TransactionDTO.class);
+
+        AddCardStatementDTO addCardStatementDTO = modelMapper.map(statementDTO, AddCardStatementDTO.class);
+        OffsetDateTime newDueDate = addCardStatementDTO.getDueDate().plusMonths(1);
+        addCardStatementDTO.setDueDate(newDueDate);
+        cardStatementService.addCardStatement(addCardStatementDTO);
+
+        logger.trace("Exited addPayment");
+        return transactionDTO;
     }
 
     /**
