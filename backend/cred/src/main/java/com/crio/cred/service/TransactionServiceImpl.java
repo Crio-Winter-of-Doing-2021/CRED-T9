@@ -17,6 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,6 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final CardStatementService cardStatementService;
     private final VendorService vendorService;
     private final CategoryService categoryService;
+    private final EntityManager entityManager;
 
     /**
      * Add the transaction.
@@ -176,5 +182,82 @@ public class TransactionServiceImpl implements TransactionService {
         OffsetDateTime end = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
         Page<Transactions> all = transactionsRepository.findAllByCardStatementIdAndTransactionDateBetween(cardStatement, start, end, pageable);
         return Utils.mapEntityPageIntoDtoPage(modelMapper, all, TransactionDTO.class);
+    }
+
+    /**
+     * Gets smart statement by category.
+     *
+     * @param cardId the card id
+     * @param month  the month
+     * @param year   the year
+     * @return the smart statement by category
+     */
+    @Override
+    public List<CategoryStatementDTO> getSmartStatementByCategory(UUID cardId, int month, int year) {
+        logger.trace("Entered getSmartStatementByCategory");
+        LocalDate localDate = LocalDate.of(year, month, 1)
+                .with(TemporalAdjusters.firstDayOfMonth());
+        OffsetDateTime start = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
+        localDate = localDate.with(TemporalAdjusters.lastDayOfMonth());
+        OffsetDateTime end = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<CategoryStatementDTO> query = criteriaBuilder.createQuery(CategoryStatementDTO.class);
+        Root<Transactions> root = query.from(Transactions.class);
+        Expression<Number> sumExpression = criteriaBuilder.sum(root.get("amount"));
+        query.multiselect(
+                root.get("category").get("category"),
+                sumExpression
+        );
+        query.where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(root.get("cardStatementId").get("cardId").get("cardId"), cardId),
+                        criteriaBuilder.between(root.get("transactionDate"), start, end)
+                )
+        );
+        query.groupBy(root.get("category").get("category"));
+        query.orderBy(criteriaBuilder.desc(sumExpression));
+        List<CategoryStatementDTO> resultList = entityManager.createQuery(query).getResultList();
+        logger.trace("Exited getSmartStatementByCategory");
+        return resultList;
+    }
+
+    /**
+     * Gets smart statement by vendor.
+     *
+     * @param cardId the card id
+     * @param month  the month
+     * @param year   the year
+     * @return the smart statement by vendor
+     */
+    @Override
+    public List<VendorStatementDTO> getSmartStatementByVendor(UUID cardId, int month, int year) {
+        logger.trace("Entered getSmartStatementByVendor");
+        LocalDate localDate = LocalDate.of(year, month, 1)
+                .with(TemporalAdjusters.firstDayOfMonth());
+        OffsetDateTime start = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
+        localDate = localDate.with(TemporalAdjusters.lastDayOfMonth());
+        OffsetDateTime end = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<VendorStatementDTO> query = criteriaBuilder.createQuery(VendorStatementDTO.class);
+        Root<Transactions> root = query.from(Transactions.class);
+        Expression<Number> sumExpression = criteriaBuilder.sum(root.get("amount"));
+        Expression<Long> countExpression = criteriaBuilder.count(root.get("vendor").get("vendor"));
+        query.multiselect(
+                root.get("vendor").get("vendor"),
+                sumExpression,
+                countExpression
+        );
+        query.where(
+                criteriaBuilder.and(
+                        criteriaBuilder.equal(root.get("cardStatementId").get("cardId").get("cardId"), cardId),
+                        criteriaBuilder.between(root.get("transactionDate"), start, end)
+                )
+        );
+        query.groupBy(root.get("vendor").get("vendor"));
+        query.orderBy(criteriaBuilder.desc(countExpression), criteriaBuilder.desc(sumExpression));
+        List<VendorStatementDTO> resultList = entityManager.createQuery(query).getResultList();
+        logger.trace("Exited getSmartStatementByVendor");
+        return resultList;
     }
 }

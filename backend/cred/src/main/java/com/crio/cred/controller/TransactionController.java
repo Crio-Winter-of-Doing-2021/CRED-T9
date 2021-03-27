@@ -2,9 +2,7 @@ package com.crio.cred.controller;
 
 import com.crio.cred.annotation.ApiPageable;
 import com.crio.cred.configuration.SpringFoxConfig;
-import com.crio.cred.dto.AddTransactionDTO;
-import com.crio.cred.dto.PaymentTransactionDTO;
-import com.crio.cred.dto.TransactionDTO;
+import com.crio.cred.dto.*;
 import com.crio.cred.exception.LimitExceededException;
 import com.crio.cred.model.ErrorDetails;
 import com.crio.cred.service.CardDetailsService;
@@ -112,10 +110,12 @@ public class TransactionController {
     @PostMapping(value = "/cards/{id}/statements/{year}/{month}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addTransactionStatement(@PathVariable(value = "id")
-                                                     @ApiParam(value = "credit card id", readOnly = true)
+                                                         @ApiParam(value = "credit card id", required = true)
                                                              UUID cardId,
-                                                     @PathVariable int month,
-                                                     @PathVariable int year,
+                                                     @ApiParam(value = "month", required = true)
+                                                         @PathVariable int month,
+                                                     @ApiParam(value = "year", required = true)
+                                                         @PathVariable int year,
                                                      @RequestBody @Valid List<AddTransactionDTO> transactions) {
         if (!cardDetailsService.isCardPresent(cardId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -134,7 +134,7 @@ public class TransactionController {
 
 
     @ApiResponses({
-            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Successfully found the card statement.",
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Successfully generated the card statement.",
                     response = TransactionDTO.class),
             @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Credit card not found.",
                     response = ErrorDetails.class)
@@ -145,9 +145,11 @@ public class TransactionController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiPageable
     public ResponseEntity<?> getTransactionStatement(@PathVariable(value = "id")
-                                                     @ApiParam(value = "credit card id", readOnly = true)
+                                                     @ApiParam(value = "credit card id", required = true)
                                                              UUID cardId,
+                                                     @ApiParam(value = "month", required = true)
                                                      @PathVariable int month,
+                                                     @ApiParam(value = "year", required = true)
                                                      @PathVariable int year,
                                                      @PageableDefault @ApiIgnore Pageable pageable) {
         logger.trace("Entered getTransactionStatement");
@@ -162,5 +164,75 @@ public class TransactionController {
                 transactionService.getTransactionStatement(cardId, month, year, pageable);
         logger.trace("Exited getTransactionStatement");
         return ResponseEntity.ok(statement);
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Successfully generated the card statement.",
+                    response = CategoryStatementDTO.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "No transactions found."),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Credit card not found.",
+                    response = ErrorDetails.class)
+    })
+    @ApiOperation(value = "Gets the credit card smart statement based on category of the given month and year.",
+            produces = MediaType.APPLICATION_JSON_VALUE, authorizations = {@Authorization("JWT")})
+    @GetMapping(value = "/cards/{id}/category/smart-statement/{year}/{month}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getSmartStatementByCategory(@PathVariable(value = "id")
+                                                         @ApiParam(value = "credit card id", required = true)
+                                                                 UUID cardId,
+                                                         @ApiParam(value = "month", required = true)
+                                                         @PathVariable int month,
+                                                         @ApiParam(value = "year", required = true)
+                                                         @PathVariable int year) {
+        logger.trace("Entered getSmartStatementByCategory");
+        if (!cardDetailsService.isCardPresent(cardId)) {
+            logger.debug("Credit Card with id {} not found.", cardId);
+            logger.trace("Exited getTransactionStatement");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
+            );
+        }
+        List<CategoryStatementDTO> statement = transactionService.getSmartStatementByCategory(cardId, month, year);
+        if (statement.size() > 0) {
+            logger.trace("Exited getSmartStatementByCategory");
+            return ResponseEntity.ok(statement);
+        }
+        logger.trace("Exited getSmartStatementByCategory");
+        return ResponseEntity.noContent().build();
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = "Successfully generated the card statement.",
+                    response = CategoryStatementDTO.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "No transactions found."),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Credit card not found.",
+                    response = ErrorDetails.class)
+    })
+    @ApiOperation(value = "Gets the credit card smart statement based on vendor of the given month and year.",
+            produces = MediaType.APPLICATION_JSON_VALUE, authorizations = {@Authorization("JWT")})
+    @GetMapping(value = "/cards/{id}/vendor/smart-statement/{year}/{month}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getSmartStatementByVendor(@PathVariable(value = "id")
+                                                       @ApiParam(value = "credit card id", required = true)
+                                                               UUID cardId,
+                                                       @ApiParam(value = "month", required = true)
+                                                       @PathVariable int month,
+                                                       @ApiParam(value = "year", required = true)
+                                                       @PathVariable int year) {
+        logger.trace("Entered getSmartStatementByVendor");
+        if (!cardDetailsService.isCardPresent(cardId)) {
+            logger.debug("Credit Card with id {} not found.", cardId);
+            logger.trace("Exited getTransactionStatement");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ErrorDetails(HttpStatus.NOT_FOUND, "Credit card not found.")
+            );
+        }
+        List<VendorStatementDTO> statement = transactionService.getSmartStatementByVendor(cardId, month, year);
+        if (statement.size() > 0) {
+            logger.trace("Exited getSmartStatementByVendor");
+            return ResponseEntity.ok(statement);
+        }
+        logger.trace("Exited getSmartStatementByVendor");
+        return ResponseEntity.noContent().build();
     }
 }

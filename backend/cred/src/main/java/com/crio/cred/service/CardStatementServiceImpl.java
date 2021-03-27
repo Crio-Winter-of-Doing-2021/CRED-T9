@@ -57,9 +57,17 @@ public class CardStatementServiceImpl implements CardStatementService {
         return updatedCardStatementDTO;
     }
 
+    /**
+     * Gets card statement by card id.
+     *
+     * @param cardId the card id
+     * @return the card statement by card id
+     */
     @Override
-    public List<CardStatementDTO> getCardStatement() {
-        return Utils.mapList(modelMapper, cardStatementRepository.findAll(), CardStatementDTO.class);
+    public List<CardStatementDTO> getCardStatementByCardId(UUID cardId) {
+        CardDetails card = new CardDetails();
+        card.setCardId(cardId);
+        return Utils.mapList(modelMapper, cardStatementRepository.findAllByCardId(card), CardStatementDTO.class);
     }
 
     @Override

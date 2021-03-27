@@ -29,12 +29,14 @@ public interface CardStatementService {
      */
     CardStatementDTO updateCardStatement(CardStatementDTO cardStatementDTO);
 
+
     /**
-     * Gets card statement.
+     * Gets card statement by card id.
      *
-     * @return the card statement
+     * @param cardId the card id
+     * @return the card statement by card id
      */
-    List<CardStatementDTO> getCardStatement();
+    List<CardStatementDTO> getCardStatementByCardId(UUID cardId);
 
     /**
      * Gets outstanding statement.

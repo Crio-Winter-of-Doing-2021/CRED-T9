@@ -5,6 +5,7 @@ import com.crio.cred.entity.CardStatement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,4 +23,12 @@ public interface CardStatementRepository extends JpaRepository<CardStatement, UU
      * @return the card statement
      */
     CardStatement findCardStatementBySettleDateIsNullAndCardId(CardDetails cardId);
+
+    /**
+     * Find all by card statements id.
+     *
+     * @param cardId the card id
+     * @return the list
+     */
+    List<CardStatement> findAllByCardId(CardDetails cardId);
 }
