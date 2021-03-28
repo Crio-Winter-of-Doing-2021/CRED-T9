@@ -3,6 +3,8 @@ package com.crio.cred.security;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -48,5 +50,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    /**
+     * Gets email from security.
+     *
+     * @return the email from security
+     */
+    public String getEmailFromSecurity() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (String) auth.getPrincipal();
     }
 }

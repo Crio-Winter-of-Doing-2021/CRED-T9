@@ -18,17 +18,25 @@ import java.util.List;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ErrorDetails {
-    /** The status. */
+    /**
+     * The status.
+     */
     private HttpStatus status;
 
-    /** The timestamp. */
+    /**
+     * The timestamp.
+     */
     @SuppressWarnings("unused")
     private ZonedDateTime timestamp;
 
-    /** The message. */
+    /**
+     * The message.
+     */
     private String message;
 
-    /** The errors. */
+    /**
+     * The errors.
+     */
     private List<String> errors;
 
     /**

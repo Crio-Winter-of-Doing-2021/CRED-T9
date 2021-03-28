@@ -50,7 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/h2-console/**",
-            "/actuator/**"
+            "/actuator/**",
+            "/favicon.ico"
     };
 
     @Override
@@ -73,7 +74,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // dont authenticate the list of URLs
                 .antMatchers(whiteListedURLs).permitAll()
                 // all other requests need to be authenticated
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .headers()
+                .frameOptions()
+                .sameOrigin();
         logger.trace("Exited configure httpSecurity");
     }
 
