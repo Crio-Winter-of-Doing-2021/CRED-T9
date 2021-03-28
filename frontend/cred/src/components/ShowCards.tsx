@@ -40,7 +40,7 @@ class ShowCards extends Component<ShowCardsProp> {
         let cardsView = cardGrid.map(items => {
             let rows = []
             let cols = items.map(card => {
-                return (<Col className="card-column">{CardView(card)}</Col>)
+                return (<Col className="card-column">{<CardView creditCard = {card}/>}</Col>)
             })
             rows.push(<Row style={{ marginTop: '36px' }}>{cols}</Row>)
             return rows
