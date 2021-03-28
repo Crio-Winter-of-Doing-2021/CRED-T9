@@ -83,10 +83,10 @@ class CardStatement extends Component<Prop, State> {
         }
         let transactions = this.props.getStatementState.statement.map(item => {
             return (<tr>
-                <td>{item.date}</td>
-                <td>{item.txnId}</td>
+                <td>{dayjs(item.transactionDate).format('DD/MM/YYYY')}</td>
+                <td>{item.transactionId}</td>
                 <td>{item.vendor}</td>
-                <td className={item.type === "debit" ? "style-debit" : "style-credit"}>{item.amount}</td>
+                <td className={item.transactionType === "DEBIT" ? "style-debit" : "style-credit"}>{item.currency + " " + item.amount}</td>
             </tr>)
         })
         return (
