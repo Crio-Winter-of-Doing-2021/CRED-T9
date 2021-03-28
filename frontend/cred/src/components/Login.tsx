@@ -16,7 +16,7 @@ interface LoginProp {
     login: (payload: any) => void
 }
 
-const EMAIL = "email"
+const EMAIL = "emailId"
 const PASSWORD = "password"
 
 class Login extends Component<LoginProp, FormState> {
@@ -39,7 +39,7 @@ class Login extends Component<LoginProp, FormState> {
             return
         }
         const payload = {
-            email: this.state.fields[EMAIL],
+            emailId: this.state.fields[EMAIL],
             password: this.state.fields[PASSWORD]
         }
         this.props.login(payload)
