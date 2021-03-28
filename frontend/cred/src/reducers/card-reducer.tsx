@@ -51,7 +51,7 @@ function cardReducer(state = defaultState, action: any) {
       newState.inProgress = false
       newState.success = true
       newState.error = ""
-      newState.cards = action.payload
+      newState.cards = action.payload.data.content
       return {
         ...state,
         getAllCardsState: newState
@@ -125,7 +125,7 @@ function cardReducer(state = defaultState, action: any) {
       newState.inProgress = false
       newState.success = true
       newState.error = ""
-      newState.statement = action.payload
+      newState.statement = action.payload.data.content
       return {
         ...state,
         getStatementState: newState

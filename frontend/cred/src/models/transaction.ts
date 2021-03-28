@@ -1,8 +1,9 @@
 export interface Transaction {
-    date : string,
+    transactionDate : string,
 	vendor : string,
 	category : string,
-	txnId : string,
+	transactionId : string,
 	amount : number,
-	type : string
+	transactionType : string,
+	currency: string
 }

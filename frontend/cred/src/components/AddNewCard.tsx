@@ -89,12 +89,12 @@ class AddNewCard extends Component<AddCardProp, FormState> {
                 </Navbar>
                 <form className="form">
                     <h4 className="login-form-heading">Add a card</h4>
-                    <div className="formgroup">
+                    <div className="form-group">
                         <label>Card Nick Name</label>
                         <input
                             type="text"
                             className="form-control"
-                            placeholder="Card Nick Name like Work, Home"
+                            placeholder="like - my shopping card"
                             onChange={this.handleChange.bind(this, CARD_NICK_NAME)}
                         />
                         <span className="error-message">
