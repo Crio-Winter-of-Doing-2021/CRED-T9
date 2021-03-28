@@ -33,5 +33,5 @@ function isNumber(value: string) {
 
 export function getCardType(cardNumber: string) {
    let result = isValid(cardNumber)
-   return (result as any).cardType
+   return (result as any).cardType.toUpperCase()
 }
