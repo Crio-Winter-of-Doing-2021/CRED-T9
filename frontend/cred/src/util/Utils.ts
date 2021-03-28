@@ -1,4 +1,5 @@
 import { isValid } from 'cc-validate'
+import dayjs from 'dayjs';
 
 const emailRegex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}"
 const numberRegex = '^[0-9]*$'
@@ -34,4 +35,13 @@ function isNumber(value: string) {
 export function getCardType(cardNumber: string) {
    let result = isValid(cardNumber)
    return (result as any).cardType.toUpperCase()
+}
+
+export function getFormattedDate(date: string) {
+   return dayjs(date).format('DD/MM/YYYY')
+}
+
+export enum TransactionType {
+   DEBIT = "DEBIT", 
+   CREDIT = "CREDIT"
 }
