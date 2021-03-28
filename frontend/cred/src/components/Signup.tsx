@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand } from 'react-bootstrap';
-import { SignupState } from '../models/signupState';
+import { SignupState } from '../models/authState';
 import { FormState } from '../models/formState';
 import { isEmailValid, isMobileNumberValid } from '../util/Utils';
 import { ProgressBar } from 'react-bootstrap';
@@ -45,7 +45,7 @@ class Signup extends Component<SignupProp, FormState> {
             firstName: this.state.fields[FIRST_NAME],
             lastName: this.state.fields[LAST_NAME],
             mobileNumber: this.state.fields[MOBILE_NUMBER],
-            email: this.state.fields[EMAIL],
+            emailId: this.state.fields[EMAIL],
             password: this.state.fields[PASSWORD]
         }
         this.props.signup(payload)

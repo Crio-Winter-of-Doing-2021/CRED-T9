@@ -19,3 +19,33 @@
     font-size: 24pt;
     margin-top: 5%;
 }
+
+.statement-container {
+    margin: 2% auto;
+    max-width: 75%;
+}
+
+.statement-heading {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.statement-input {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-bottom: 2%;
+    border:1px solid #DDDDDD;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.style-debit{
+    color: red;
+}
+
+.style-credit{
+    color: green;
+}
