@@ -8,18 +8,30 @@ import { CreditCard } from "../models/creditCard";
 import { RootState } from '../reducers';
 import CardView from './CardView'
 import { getAllCards } from '../actions/card-action'
+import { logout } from '../actions/auth-action'
 import '../styles/cards.css'
+import { LogoutState } from "../models/authState";
 
 interface ShowCardsProp {
     getAllCardsState: GetAllCardsState,
-    getAllCards: () => void
+    logoutState: LogoutState,
+    history: any,
+    getAllCards: () => void,
+    logout: () => void
 }
 
 class ShowCards extends Component<ShowCardsProp> {
     componentDidMount() {
         this.props.getAllCards()
     }
+    handleSubmit = (e: React.ChangeEvent<any>) => {
+        e.preventDefault();
+        this.props.logout()
+    }
     render() {
+        if(this.props.logoutState.success) {
+            this.props.history.replace('/login')
+        }
         let cards = this.props.getAllCardsState.cards
         let cardGrid = cards.reduce(function (result, _, index, array) {
             if (index % 2 === 0) result.push(array.slice(index, index + 2));
@@ -41,7 +53,11 @@ class ShowCards extends Component<ShowCardsProp> {
                         <Button className="add-card-button" variant="outline-primary" href="/add-card">
                             Add a card
                         </Button>
-                        <Button variant="outline-danger">Log out</Button>
+                        <Button 
+                            variant="outline-danger"
+                            onClick={this.handleSubmit.bind(this)}>
+                            Log out
+                        </Button>
                     </Nav>
                 </Navbar>
                 {this.props.getAllCardsState.cards.length > 0 ? <Container className="cards-container">
@@ -52,11 +68,14 @@ class ShowCards extends Component<ShowCardsProp> {
     }
 }
 const mapStateToProps = (state: RootState) => {
-    return { getAllCardsState: state.cardReducer.getAllCardsState };
+    return { 
+        getAllCardsState: state.cardReducer.getAllCardsState,
+        logoutState: state.authReducer.logoutState
+    };
 };
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        ...bindActionCreators({ getAllCards }, dispatch)
+        ...bindActionCreators({ getAllCards, logout }, dispatch)
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ShowCards)

@@ -1,14 +1,19 @@
 import { CreditCard } from "./creditCard";
+import { Transaction } from "./transaction";
 
-export interface GetAllCardsState{
-    inProgress: boolean,
-    success: boolean,
-    error: any,
-    cards: Array<CreditCard>
-}
-
-export interface AddCardState{
+interface BaseState {
     inProgress: boolean,
     success: boolean,
     error: any
+}
+
+export interface GetAllCardsState extends BaseState{
+    cards: Array<CreditCard>
+}
+
+export interface AddCardState extends BaseState{
+}
+
+export interface GetStatementState extends BaseState{
+    statement: Array<Transaction>
 }

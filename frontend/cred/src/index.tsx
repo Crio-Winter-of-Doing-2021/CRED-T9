@@ -5,6 +5,7 @@ import App from './components/App';
 import Login from './components/Login';
 import Signup from './components/Signup'
 import AddNewCard from './components/AddNewCard'
+import CardStatement from './components/CardStatement'
 import reportWebVitals from './reportWebVitals';
 import { Provider } from "react-redux";
 import store from "./store/index";
@@ -17,6 +18,7 @@ ReactDOM.render(
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/add-card" component={AddNewCard} />
+        <Route path="/view-statement/:id" component={CardStatement} />
       </Switch>
     </Router>
   </Provider>,
