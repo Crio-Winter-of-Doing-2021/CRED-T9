@@ -172,15 +172,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Page<TransactionDTO> getTransactionStatement(UUID cardId, int month, int year,
                                                         Pageable pageable) {
-        CardStatementDTO statementDTO =
-                cardStatementService.getOutstandingStatement(cardId);
-        CardStatement cardStatement = modelMapper.map(statementDTO, CardStatement.class);
+        List<CardStatementDTO> statements = cardStatementService.getCardStatementByCardId(cardId);
+        List<CardStatement> cardStatements = Utils.mapList(modelMapper, statements, CardStatement.class);
         LocalDate localDate = LocalDate.of(year, month, 1)
                 .with(TemporalAdjusters.firstDayOfMonth());
         OffsetDateTime start = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
         localDate = localDate.with(TemporalAdjusters.lastDayOfMonth());
         OffsetDateTime end = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
-        Page<Transactions> all = transactionsRepository.findAllByCardStatementIdAndTransactionDateBetween(cardStatement, start, end, pageable);
+        Page<Transactions> all = transactionsRepository
+                .findAllByCardStatementIdInAndTransactionDateBetween(cardStatements, start, end, pageable);
         return Utils.mapEntityPageIntoDtoPage(modelMapper, all, TransactionDTO.class);
     }
 

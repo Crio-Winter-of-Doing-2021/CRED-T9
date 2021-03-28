@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,4 +19,6 @@ import java.util.UUID;
 @Repository
 public interface TransactionsRepository extends JpaRepository<Transactions, UUID> {
     Page<Transactions> findAllByCardStatementIdAndTransactionDateBetween(CardStatement cardStatementId, OffsetDateTime transactionDate, OffsetDateTime transactionDate2, Pageable pageable);
+
+    Page<Transactions> findAllByCardStatementIdInAndTransactionDateBetween(List<CardStatement> cardStatements, OffsetDateTime transactionDate, OffsetDateTime transactionDate2, Pageable pageable);
 }
