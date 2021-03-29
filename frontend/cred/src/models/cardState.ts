@@ -17,3 +17,7 @@ export interface AddCardState extends BaseState{
 export interface GetStatementState extends BaseState{
     statement: Array<Transaction>
 }
+
+export interface PayBillState extends BaseState {
+    
+}

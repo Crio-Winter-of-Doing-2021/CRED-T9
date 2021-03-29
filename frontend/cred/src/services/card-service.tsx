@@ -22,6 +22,13 @@ export function getStatementApi(id: number, year: number, month: number,
     .catch(err => error(err))
 }
 
+export function payBillApi(id: string, payload: any, 
+  success: (response: any) => any, error: (error: any) => any) {
+  axios.post(baseUrl + "cards/" + id + "/pay", payload, getConfig())
+    .then(res => success(res))
+    .catch(err => error(err))
+}
+
 function getConfig() {
   return { headers: { 'Authorization': 'Bearer ' + localStorage.getItem(USER_TOKEN) } }
 }

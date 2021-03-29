@@ -4,7 +4,8 @@ import { CreditCard } from '../models/creditCard'
 import { getFormattedDate } from '../util/Utils'
 
 interface Prop {
-    creditCard: CreditCard
+    creditCard: CreditCard,
+    showPaybillModal: (creditCard: CreditCard) => void
 }
 
 interface State {
@@ -47,7 +48,7 @@ class CardView extends Component<Prop, State> {
                                         View Statement
                                 </a>
                                 {card.totalDue > 0 ?
-                                    <a className='card-link' href='/pay-bill'>Pay bill</a> :
+                                    <div className='card-link' onClick={() => this.props.showPaybillModal(card)}>Pay bill</div> :
                                     <div className='card-link-disabled'>Pay bill</div>}
                             </div>
                         </div>
