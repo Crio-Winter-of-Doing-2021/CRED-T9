@@ -2,12 +2,13 @@ import { Component } from 'react';
 import { Button, Dropdown, DropdownButton, Table } from 'react-bootstrap';
 import dayjs from 'dayjs';
 import { bindActionCreators } from 'redux';
-import { Navbar, NavbarBrand } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 import { GetStatementState } from '../models/cardState'
 import { RootState } from '../reducers';
 import { connect } from "react-redux";
 import { getStatement } from '../actions/card-action'
 import { getFormattedDate, TransactionType } from '../util/Utils'
+import { CustomNavBrand } from './CustomNavBrand'
 
 interface Prop {
     match: any
@@ -105,7 +106,7 @@ class CardStatement extends Component<Prop, State> {
         return (
             <div>
                 <Navbar expand="lg" sticky="top" variant="light">
-                    <NavbarBrand href="/">CRED</NavbarBrand>
+                    <CustomNavBrand/>
                 </Navbar>
                 <div className="statement-container">
                     <div className="statement-input">
