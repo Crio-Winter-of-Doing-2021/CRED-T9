@@ -245,7 +245,8 @@ public class TransactionServiceImpl implements TransactionService {
         query.where(
                 criteriaBuilder.and(
                         criteriaBuilder.equal(root.get("cardStatementId").get("cardId").get("cardId"), cardId),
-                        criteriaBuilder.between(root.get("transactionDate"), start, end)
+                        criteriaBuilder.between(root.get("transactionDate"), start, end),
+                        criteriaBuilder.equal(root.get("transactionType"), TransactionType.DEBIT)
                 )
         );
         query.groupBy(root.get("category").get("category"));
@@ -285,7 +286,8 @@ public class TransactionServiceImpl implements TransactionService {
         query.where(
                 criteriaBuilder.and(
                         criteriaBuilder.equal(root.get("cardStatementId").get("cardId").get("cardId"), cardId),
-                        criteriaBuilder.between(root.get("transactionDate"), start, end)
+                        criteriaBuilder.between(root.get("transactionDate"), start, end),
+                        criteriaBuilder.equal(root.get("transactionType"), TransactionType.DEBIT)
                 )
         );
         query.groupBy(root.get("vendor").get("vendor"));
