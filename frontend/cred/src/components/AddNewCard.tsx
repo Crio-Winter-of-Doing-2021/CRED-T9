@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, NavbarBrand } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { addCard } from '../actions/card-action'
 import { bindActionCreators } from 'redux';
@@ -8,6 +8,7 @@ import { AddCardState } from '../models/cardState';
 import { FormState } from '../models/formState';
 import { isCardNumberValid, isCardCvvValid, isCardExpiryValid, getCardType } from '../util/Utils'
 import { ProgressBar } from 'react-bootstrap';
+import { CustomNavBrand } from './CustomNavBrand'
 import "../styles/login.css"
 
 interface AddCardProp {
@@ -85,7 +86,7 @@ class AddNewCard extends Component<AddCardProp, FormState> {
         return (
             <div>
                 <Navbar expand="lg" sticky="top" variant="light">
-                    <NavbarBrand href="/">CRED</NavbarBrand>
+                    <CustomNavBrand/>
                 </Navbar>
                 <form className="form">
                     <h4 className="login-form-heading">Add a card</h4>

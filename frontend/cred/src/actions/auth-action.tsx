@@ -1,5 +1,5 @@
 import { LOGIN_SUCCESS, LOGIN_FAILED, LOGIN_PROGRESS } from "../constants/action-types";
-import { LOGOUT_SUCCESS, LOGOUT_FAILED, LOGOUT_PROGRESS } from "../constants/action-types";
+import { LOGOUT_SUCCESS, LOGOUT_PROGRESS } from "../constants/action-types";
 import { SIGNUP_SUCCESS, SIGNUP_FAILED, SIGNUP_PROGRESS } from "../constants/action-types";
 import { loginApi, signupApi } from '../services/auth-service'
 

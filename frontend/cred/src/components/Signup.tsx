@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, NavbarBrand } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 import { SignupState } from '../models/authState';
 import { FormState } from '../models/formState';
 import { isEmailValid, isMobileNumberValid } from '../util/Utils';
@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { RootState } from '../reducers';
 import { signup } from '../actions/auth-action'
+import { CustomNavBrand } from './CustomNavBrand'
 import "../styles/login.css"
 
 interface SignupProp {
@@ -84,7 +85,7 @@ class Signup extends Component<SignupProp, FormState> {
         return (
             <div>
                 <Navbar expand="lg" sticky="top" variant="light">
-                    <NavbarBrand href="/">CRED</NavbarBrand>
+                    <CustomNavBrand/>
                 </Navbar>
                 <form className="form">
                     <h4 className="signup-form-heading">Sign up</h4>

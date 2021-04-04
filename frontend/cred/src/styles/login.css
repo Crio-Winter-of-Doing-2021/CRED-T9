@@ -17,3 +17,11 @@
 .progressbar {
     margin-top: 10px;
 }
+
+.pay_custom_amount_div {
+    display: flex;
+    flex-direction: row;
+}
+.pay_custom_amount {
+    margin-left: 12px;
+}
