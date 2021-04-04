@@ -24,6 +24,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -66,6 +67,8 @@ public class TransactionServiceImpl implements TransactionService {
             throw new LimitExceededException("Maximum limit of the credit card is exceeded.");
         }
 
+        BigDecimal minDue = totalDue.divide(BigDecimal.TEN, RoundingMode.CEILING);
+        statementDTO.setMinDue(minDue);
         cardStatementService.updateCardStatement(statementDTO);
 
         Transactions transaction = modelMapper.map(addTransactionDTO, Transactions.class);
@@ -106,8 +109,19 @@ public class TransactionServiceImpl implements TransactionService {
         CardStatementDTO statementDTO =
                 cardStatementService.getOutstandingStatement(cardId);
         CardStatement cardStatement = modelMapper.map(statementDTO, CardStatement.class);
+        BigDecimal paymentAmount = paymentTransactionDTO.getAmount();
+
         BigDecimal totalDue = statementDTO.getTotalDue();
-        totalDue = totalDue.subtract(paymentTransactionDTO.getAmount());
+        if (paymentAmount.compareTo(totalDue) > 0) {
+            throw new IllegalArgumentException("Payment cannot be greater than outstanding due.");
+        }
+
+        BigDecimal minDue = statementDTO.getMinDue();
+        if (minDue.compareTo(paymentAmount) > 0) {
+            throw new IllegalArgumentException("The minimum due amount is: " + minDue);
+        }
+
+        totalDue = totalDue.subtract(paymentAmount);
         statementDTO.setTotalDue(totalDue);
         statementDTO.setSettleDate(OffsetDateTime.now());
         cardStatementService.updateCardStatement(statementDTO);
@@ -172,15 +186,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Page<TransactionDTO> getTransactionStatement(UUID cardId, int month, int year,
                                                         Pageable pageable) {
-        CardStatementDTO statementDTO =
-                cardStatementService.getOutstandingStatement(cardId);
-        CardStatement cardStatement = modelMapper.map(statementDTO, CardStatement.class);
+        List<CardStatementDTO> statements = cardStatementService.getCardStatementByCardId(cardId);
+        List<CardStatement> cardStatements = Utils.mapList(modelMapper, statements, CardStatement.class);
         LocalDate localDate = LocalDate.of(year, month, 1)
                 .with(TemporalAdjusters.firstDayOfMonth());
         OffsetDateTime start = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
         localDate = localDate.with(TemporalAdjusters.lastDayOfMonth());
         OffsetDateTime end = OffsetDateTime.of(localDate, LocalTime.MIN, ZoneOffset.UTC);
-        Page<Transactions> all = transactionsRepository.findAllByCardStatementIdAndTransactionDateBetween(cardStatement, start, end, pageable);
+        Page<Transactions> all = transactionsRepository
+                .findAllByCardStatementIdInAndTransactionDateBetween(cardStatements, start, end, pageable);
         return Utils.mapEntityPageIntoDtoPage(modelMapper, all, TransactionDTO.class);
     }
 
