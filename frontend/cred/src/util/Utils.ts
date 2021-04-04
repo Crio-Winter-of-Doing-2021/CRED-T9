@@ -1,4 +1,5 @@
 import { isValid } from 'cc-validate'
+import dayjs from 'dayjs';
 
 const emailRegex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}"
 const numberRegex = '^[0-9]*$'
@@ -23,8 +24,9 @@ export function isCardCvvValid(cardCvv: string) {
 export function isCardExpiryValid(cardExpiry: string) {
    if(!cardExpiry) return false
    let splitarr = cardExpiry.split('/')
-   return splitarr.length === 2 && splitarr[0].length === 2 && splitarr[1].length === 4 && 
-      isNumber(splitarr[0]) && isNumber(splitarr[1])
+   let today = dayjs(new Date())
+   let expiry = dayjs(splitarr[1] + "-" + splitarr[0] + "-01")
+   return expiry.isAfter(today)
 }
 
 function isNumber(value: string) {
@@ -34,4 +36,13 @@ function isNumber(value: string) {
 export function getCardType(cardNumber: string) {
    let result = isValid(cardNumber)
    return (result as any).cardType.toUpperCase()
+}
+
+export function getFormattedDate(date: string) {
+   return dayjs(date).format('DD/MM/YYYY')
+}
+
+export enum TransactionType {
+   DEBIT = "DEBIT", 
+   CREDIT = "CREDIT"
 }

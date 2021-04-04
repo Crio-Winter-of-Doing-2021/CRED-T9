@@ -1,7 +1,8 @@
 import { FETCH_CARDS_PROGRESS, FETCH_CARDS_SUCCESS, FETCH_CARDS_FAILED } from "../constants/action-types";
 import { ADD_CARD_PROGRESS, ADD_CARD_SUCCESS, ADD_CARD_FAILED } from "../constants/action-types";
 import { GET_STATEMENT_SUCCESS, GET_STATEMENT_FAILED, GET_STATEMENT_PROGRESS } from "../constants/action-types";
-import { GetAllCardsState, AddCardState, GetStatementState } from '../models/cardState';
+import { PAY_BILL_SUCCESS, PAY_BILL_FAILED, PAY_BILL_PROGRESS } from "../constants/action-types";
+import { GetAllCardsState, AddCardState, GetStatementState, PayBillState } from '../models/cardState';
 
 const defaultGetAllCardsState: GetAllCardsState = {
   inProgress: false,
@@ -23,10 +24,17 @@ const defaultGetStatementState: GetStatementState = {
   statement: []
 }
 
+const defaultPayBillState: PayBillState = {
+  inProgress: false,
+  success: false,
+  error: ""
+}
+
 const defaultState = {
   getAllCardsState: defaultGetAllCardsState,
   addCardState: defaultAddCardState,
-  getStatementState: defaultGetStatementState
+  getStatementState: defaultGetStatementState,
+  payBillState: defaultPayBillState
 }
 
 function cardReducer(state = defaultState, action: any) {
@@ -41,7 +49,8 @@ function cardReducer(state = defaultState, action: any) {
       newState.cards = []
       return {
         ...state,
-        getAllCardsState: newState
+        getAllCardsState: newState,
+        payBillState: defaultPayBillState
       }
     }
     case FETCH_CARDS_SUCCESS: {
@@ -141,6 +150,42 @@ function cardReducer(state = defaultState, action: any) {
       return {
         ...state,
         getStatementState: newState
+      }
+    }
+    case PAY_BILL_PROGRESS: {
+      const newState = {
+        ...state.payBillState
+      }
+      newState.inProgress = true
+      newState.success = false
+      newState.error = ""
+      return {
+        ...state,
+        payBillState: newState
+      }
+    }
+    case PAY_BILL_SUCCESS: {
+      const newState = {
+        ...state.payBillState
+      }
+      newState.inProgress = false
+      newState.success = true
+      newState.error = ""
+      return {
+        ...state,
+        payBillState: newState
+      }
+    }
+    case PAY_BILL_FAILED: {
+      const newState = {
+        ...state.payBillState
+      }
+      newState.inProgress = false
+      newState.success = false
+      newState.error = action.payload
+      return {
+        ...state,
+        payBillState: newState
       }
     }
     default:

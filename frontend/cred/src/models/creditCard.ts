@@ -4,5 +4,8 @@ export interface CreditCard {
     cardNickName: string,
     cardPaymentService: string,
     expiryDate: string,
-    nameOnCard: string
+    nameOnCard: string,
+    dueDate: string,
+    minDue: number,
+    totalDue: number
 }

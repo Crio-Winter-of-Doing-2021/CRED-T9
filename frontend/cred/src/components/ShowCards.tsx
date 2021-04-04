@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Container, Col, Row } from "react-bootstrap";
-import { Navbar, NavbarBrand, Button, Nav } from 'react-bootstrap';
+import { Navbar, Button, Nav } from 'react-bootstrap';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { GetAllCardsState } from "../models/cardState";
@@ -11,6 +11,8 @@ import { getAllCards } from '../actions/card-action'
 import { logout } from '../actions/auth-action'
 import '../styles/cards.css'
 import { LogoutState } from "../models/authState";
+import { CustomNavBrand } from './CustomNavBrand'
+import PayBillModal from './PayBillModal'
 
 interface ShowCardsProp {
     getAllCardsState: GetAllCardsState,
@@ -20,13 +22,38 @@ interface ShowCardsProp {
     logout: () => void
 }
 
-class ShowCards extends Component<ShowCardsProp> {
+interface State {
+    showModal: boolean,
+    currentCard: CreditCard | null
+}
+
+class ShowCards extends Component<ShowCardsProp, State> {
+    constructor(props: ShowCardsProp) {
+        super(props)
+        this.state = {
+            showModal: false,
+            currentCard: null
+        }
+    }
     componentDidMount() {
         this.props.getAllCards()
     }
     handleSubmit = (e: React.ChangeEvent<any>) => {
         e.preventDefault();
         this.props.logout()
+    }
+    showPaybillModal = (creditCard: CreditCard) => {
+        this.setState({
+            showModal: true,
+            currentCard: creditCard
+        })
+    }
+    closeModal = () => {
+        this.setState({
+            showModal: false,
+            currentCard: null
+        })
+        window.location.reload();
     }
     render() {
         if(this.props.logoutState.success) {
@@ -40,7 +67,9 @@ class ShowCards extends Component<ShowCardsProp> {
         let cardsView = cardGrid.map(items => {
             let rows = []
             let cols = items.map(card => {
-                return (<Col className="card-column">{CardView(card)}</Col>)
+                return (<Col className="card-column">{
+                    <CardView creditCard = {card} showPaybillModal={this.showPaybillModal}/>}
+                </Col>)
             })
             rows.push(<Row style={{ marginTop: '36px' }}>{cols}</Row>)
             return rows
@@ -48,7 +77,7 @@ class ShowCards extends Component<ShowCardsProp> {
         return (
             <div>
                 <Navbar expand="lg" sticky="top" variant="light">
-                    <NavbarBrand href="/">CRED</NavbarBrand>
+                    <CustomNavBrand/>
                     <Nav className="ml-auto">
                         <Button className="add-card-button" variant="outline-primary" href="/add-card">
                             Add a card
@@ -62,7 +91,12 @@ class ShowCards extends Component<ShowCardsProp> {
                 </Navbar>
                 {this.props.getAllCardsState.cards.length > 0 ? <Container className="cards-container">
                     {cardsView}
-                </Container> : (<div className="no-cards_available">No cards available</div>)}
+                </Container> : 
+                <div className="no-cards_available">
+                    {this.props.getAllCardsState.inProgress ? "" : "No cards available"}
+                </div>}
+                {this.state.showModal && <PayBillModal creditCard = {this.state.currentCard!} 
+                hideModal={this.closeModal}/>}
             </div>
         )
     }
