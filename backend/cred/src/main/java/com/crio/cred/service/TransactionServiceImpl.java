@@ -9,6 +9,8 @@ import com.crio.cred.exception.LimitExceededException;
 import com.crio.cred.repository.TransactionsRepository;
 import com.crio.cred.types.TransactionType;
 import com.crio.cred.util.Utils;
+import io.github.benas.randombeans.randomizers.range.LocalDateTimeRangeRandomizer;
+import io.github.benas.randombeans.randomizers.time.ZoneOffsetRandomizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -25,10 +27,7 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -70,6 +69,15 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal minDue = totalDue.divide(BigDecimal.TEN, RoundingMode.CEILING);
         statementDTO.setMinDue(minDue);
         cardStatementService.updateCardStatement(statementDTO);
+
+        if (addTransactionDTO.getTransactionDate() == null) {
+            LocalDateTimeRangeRandomizer localDateTimeRangeRandomizer = LocalDateTimeRangeRandomizer
+                    .aNewLocalDateTimeRangeRandomizer(LocalDateTime.now().minusMonths(5), LocalDateTime.now());
+            ZoneOffsetRandomizer zoneOffsetRandomizer = ZoneOffsetRandomizer.aNewZoneOffsetRandomizer();
+            OffsetDateTime randomPast = OffsetDateTime.of(localDateTimeRangeRandomizer.getRandomValue(),
+                    zoneOffsetRandomizer.getRandomValue());
+            addTransactionDTO.setTransactionDate(randomPast);
+        }
 
         Transactions transaction = modelMapper.map(addTransactionDTO, Transactions.class);
         transaction.setCardStatementId(cardStatement);
@@ -175,6 +183,10 @@ public class TransactionServiceImpl implements TransactionService {
         logger.debug("Transactions count: " + transactions.size());
         List<TransactionDTO> addedTransactions = new ArrayList<>();
         for (AddTransactionDTO transactionDTO : transactions) {
+            if (transactionDTO.getTransactionDate() == null) {
+                OffsetDateTime dateTime = OffsetDateTime.of(LocalDate.of(year, month, 1), LocalTime.now(ZoneOffset.UTC), ZoneOffset.UTC);
+                transactionDTO.setTransactionDate(dateTime);
+            }
             TransactionDTO addedTransaction = addTransaction(cardId, transactionDTO);
             addedTransactions.add(addedTransaction);
         }

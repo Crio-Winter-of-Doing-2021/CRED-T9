@@ -19,7 +19,6 @@ public class AddTransactionDTO {
 
     private TransactionType transactionType;
 
-    @NotNull(message = "Transaction date is mandatory.")
     private OffsetDateTime transactionDate;
 
     @NotBlank(message = "Category is mandatory.")
