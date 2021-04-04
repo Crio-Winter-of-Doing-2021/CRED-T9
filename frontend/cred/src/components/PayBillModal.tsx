@@ -17,6 +17,9 @@ interface Props {
 interface State {
     amountSelected: number
 }
+enum PaymentType {
+    MIN_DUE, TOTAL_DUE, CUSTOM
+}
 class PayBillModal extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
@@ -24,7 +27,13 @@ class PayBillModal extends Component<Props, State> {
             amountSelected: 0
         }
     }
-    selectAmount = (amount: number, e: React.ChangeEvent<any>) => {
+    selectAmount = (paymentType: PaymentType, e: React.ChangeEvent<any>) => {
+        let amount: number
+        switch(paymentType) {
+            case PaymentType.MIN_DUE: { amount = this.props.creditCard.minDue; break; }
+            case PaymentType.TOTAL_DUE: { amount = this.props.creditCard.totalDue; break; }
+            case PaymentType.CUSTOM: { amount = e.target.value; break; }
+        }
         this.setState({
             amountSelected: amount
         })
@@ -46,17 +55,31 @@ class PayBillModal extends Component<Props, State> {
                     <Form.Check
                         type="radio"
                         label={"Min due: " + this.props.creditCard.minDue}
-                        onClick={this.selectAmount.bind(this, this.props.creditCard.minDue)}
+                        onClick={this.selectAmount.bind(this, PaymentType.MIN_DUE)}
                         name="formRadios"
                         id="min_due"
                     />
                     <Form.Check
                         type="radio"
                         label={"Total due: " + this.props.creditCard.totalDue}
-                        onClick={this.selectAmount.bind(this, this.props.creditCard.totalDue)}
+                        onClick={this.selectAmount.bind(this, PaymentType.TOTAL_DUE)}
                         name="formRadios"
                         id="total_due"
                     />
+                    <div className="pay_custom_amount_div">
+                    <Form.Check
+                        type="radio"
+                        label="Custom"
+                        value={0}
+                        onClick={this.selectAmount.bind(this, PaymentType.CUSTOM)}
+                        name="formRadios"
+                        id="total_due"/>
+                        <input 
+                            className="pay_custom_amount" 
+                            type="number" 
+                            onChange={this.selectAmount.bind(this, PaymentType.CUSTOM)}
+                            placeholder="Enter amount"/>
+                    </div>
                 </Modal.Body>
                 {this.props.payBillState.inProgress &&
                     <ProgressBar className="progressbar" animated now={100} />}
