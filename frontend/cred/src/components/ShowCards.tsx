@@ -91,7 +91,10 @@ class ShowCards extends Component<ShowCardsProp, State> {
                 </Navbar>
                 {this.props.getAllCardsState.cards.length > 0 ? <Container className="cards-container">
                     {cardsView}
-                </Container> : (<div className="no-cards_available">No cards available</div>)}
+                </Container> : 
+                <div className="no-cards_available">
+                    {this.props.getAllCardsState.inProgress ? "" : "No cards available"}
+                </div>}
                 {this.state.showModal && <PayBillModal creditCard = {this.state.currentCard!} 
                 hideModal={this.closeModal}/>}
             </div>

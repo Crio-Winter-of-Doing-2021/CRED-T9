@@ -24,8 +24,9 @@ export function isCardCvvValid(cardCvv: string) {
 export function isCardExpiryValid(cardExpiry: string) {
    if(!cardExpiry) return false
    let splitarr = cardExpiry.split('/')
-   return splitarr.length === 2 && splitarr[0].length === 2 && splitarr[1].length === 4 && 
-      isNumber(splitarr[0]) && isNumber(splitarr[1])
+   let today = dayjs(new Date())
+   let expiry = dayjs(splitarr[1] + "-" + splitarr[0] + "-01")
+   return expiry.isAfter(today)
 }
 
 function isNumber(value: string) {

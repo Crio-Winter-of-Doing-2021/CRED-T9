@@ -104,6 +104,18 @@
     color: yellow;
 }
 
+.card-link:hover {
+    color: yellowgreen;
+}
+
 .card-link-disabled {
     color: darkgoldenrod;
+}
+
+.statement-unavailable {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    padding-top: 28px;
 }

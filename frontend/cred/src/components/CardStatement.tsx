@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { getStatement } from '../actions/card-action'
 import { getFormattedDate, TransactionType } from '../util/Utils'
 import { CustomNavBrand } from './CustomNavBrand'
+import { ProgressBar } from 'react-bootstrap';
 
 interface Prop {
     match: any
@@ -123,7 +124,10 @@ class CardStatement extends Component<Prop, State> {
                             Submit
                     </Button>
                     </div>
-                    <Table striped bordered hover size="md" variant="dark">
+                    {this.props.getStatementState.inProgress && 
+                        <ProgressBar className="progressbar" animated now={100} />}
+                    {this.props.getStatementState.statement.length > 0 ?
+                        <Table striped bordered hover size="md" variant="dark">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -136,6 +140,9 @@ class CardStatement extends Component<Prop, State> {
                             {transactions}
                         </tbody>
                     </Table>
+                    : <div className="statement-unavailable">
+                        Statement not available
+                    </div>}
                 </div>
             </div>
         )

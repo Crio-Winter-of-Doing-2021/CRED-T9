@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { CreditCard } from "../models/creditCard";
-import { Modal, Form, Button } from 'react-bootstrap'
+import { Modal, Form, Button, Alert } from 'react-bootstrap'
 import { ProgressBar } from 'react-bootstrap';
 import { payBill } from '../actions/card-action'
 import { RootState } from '../reducers';
@@ -37,45 +37,51 @@ class PayBillModal extends Component<Props, State> {
         this.props.payBill(this.props.creditCard.cardId, payload)
     }
     render() {
-        if(this.props.payBillState.success) {
-            this.props.hideModal()
-            return null
-        }
-        return(
+        return (
             <Modal show={true} onHide={this.props.hideModal}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Pay bill</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
+                <Modal.Header closeButton>
+                    <Modal.Title>Pay bill</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                     <Form.Check
                         type="radio"
                         label={"Min due: " + this.props.creditCard.minDue}
                         onClick={this.selectAmount.bind(this, this.props.creditCard.minDue)}
                         name="formRadios"
                         id="min_due"
-                        />
+                    />
                     <Form.Check
                         type="radio"
                         label={"Total due: " + this.props.creditCard.totalDue}
                         onClick={this.selectAmount.bind(this, this.props.creditCard.totalDue)}
                         name="formRadios"
                         id="total_due"
-                        />
-                    </Modal.Body>
-                    {this.props.payBillState.inProgress && 
-                        <ProgressBar className="progressbar" animated now={100} />}
+                    />
+                </Modal.Body>
+                {this.props.payBillState.inProgress &&
+                    <ProgressBar className="progressbar" animated now={100} />}
+                { this.props.payBillState.success ?
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={this.props.hideModal}>Close</Button>
-                        <Button variant="primary" 
-                        disabled={this.state.amountSelected <= 0 || this.props.payBillState.inProgress} 
-                        onClick={this.handleSubmit.bind(this)}>Pay</Button>
+                        <Alert variant="success"> Payment success </Alert>
                     </Modal.Footer>
-                    {this.props.payBillState.error &&
-                        <span className="row d-flex justify-content-center error-message">
-                            {this.props.payBillState.error}
-                        </span>
-                    }
-                </Modal>
+                    :
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.props.hideModal}>
+                            Close
+                                </Button>
+                        <Button variant="primary" disabled={this.state.amountSelected <= 0 ||
+                            this.props.payBillState.inProgress}
+                            onClick={this.handleSubmit.bind(this)}>
+                            Pay
+                                </Button>
+                    </Modal.Footer>
+                }
+                {this.props.payBillState.error &&
+                    <span className="row d-flex justify-content-center error-message">
+                        {this.props.payBillState.error}
+                    </span>
+                }
+            </Modal>
         )
     }
 }
