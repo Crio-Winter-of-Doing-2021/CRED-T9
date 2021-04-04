@@ -7,3 +7,14 @@ export interface Transaction {
 	transactionType : string,
 	currency: string
 }
+
+export interface CategoryData {
+	category: string,
+	amount: number
+}
+
+export interface VendorData {
+	vendor: string,
+	amount: number,
+	count: number
+}

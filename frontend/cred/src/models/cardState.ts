@@ -1,5 +1,5 @@
 import { CreditCard } from "./creditCard";
-import { Transaction } from "./transaction";
+import { CategoryData, Transaction, VendorData } from "./transaction";
 
 interface BaseState {
     inProgress: boolean,
@@ -16,6 +16,8 @@ export interface AddCardState extends BaseState{
 
 export interface GetStatementState extends BaseState{
     statement: Array<Transaction>
+    smartStatemenyByCategory: Array<CategoryData>
+    smartStatementByVendor: Array<VendorData>
 }
 
 export interface PayBillState extends BaseState {
