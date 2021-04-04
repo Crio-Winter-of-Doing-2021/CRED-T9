@@ -106,8 +106,19 @@ public class TransactionServiceImpl implements TransactionService {
         CardStatementDTO statementDTO =
                 cardStatementService.getOutstandingStatement(cardId);
         CardStatement cardStatement = modelMapper.map(statementDTO, CardStatement.class);
+        BigDecimal paymentAmount = paymentTransactionDTO.getAmount();
+
         BigDecimal totalDue = statementDTO.getTotalDue();
-        totalDue = totalDue.subtract(paymentTransactionDTO.getAmount());
+        if (paymentAmount.compareTo(totalDue) > 0) {
+            throw new IllegalArgumentException("Payment cannot be greater than outstanding due.");
+        }
+
+        BigDecimal minDue = statementDTO.getMinDue();
+        if (minDue.compareTo(paymentAmount) > 0) {
+            throw new IllegalArgumentException("The minimum due amount is: " + minDue);
+        }
+
+        totalDue = totalDue.subtract(paymentAmount);
         statementDTO.setTotalDue(totalDue);
         statementDTO.setSettleDate(OffsetDateTime.now());
         cardStatementService.updateCardStatement(statementDTO);
