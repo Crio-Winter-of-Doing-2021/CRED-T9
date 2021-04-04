@@ -24,6 +24,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -66,6 +67,8 @@ public class TransactionServiceImpl implements TransactionService {
             throw new LimitExceededException("Maximum limit of the credit card is exceeded.");
         }
 
+        BigDecimal minDue = totalDue.divide(BigDecimal.TEN, RoundingMode.CEILING);
+        statementDTO.setMinDue(minDue);
         cardStatementService.updateCardStatement(statementDTO);
 
         Transactions transaction = modelMapper.map(addTransactionDTO, Transactions.class);

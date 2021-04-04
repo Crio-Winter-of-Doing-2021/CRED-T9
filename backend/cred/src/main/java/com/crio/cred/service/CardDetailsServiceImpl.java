@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -58,10 +59,7 @@ public class CardDetailsServiceImpl implements CardDetailsService {
                 BigDecimalRangeRandomizer.aNewBigDecimalRangeRandomizer(Double.valueOf(1_00_000.0),
                         Double.valueOf(10_00_000), Integer.valueOf(2));
         addCardStatementDTO.setMaxAmount(bigDecimalRangeRandomizer.getRandomValue());
-        bigDecimalRangeRandomizer =
-                BigDecimalRangeRandomizer.aNewBigDecimalRangeRandomizer(Double.valueOf(1000),
-                        Double.valueOf(1_00_000.0), Integer.valueOf(2));
-        addCardStatementDTO.setMinDue(bigDecimalRangeRandomizer.getRandomValue());
+        addCardStatementDTO.setMinDue(BigDecimal.ZERO);
         LocalDateTimeRangeRandomizer localDateTimeRangeRandomizer = LocalDateTimeRangeRandomizer
                 .aNewLocalDateTimeRangeRandomizer(LocalDateTime.now(), LocalDateTime.now().plusMonths(10));
         ZoneOffsetRandomizer zoneOffsetRandomizer = ZoneOffsetRandomizer.aNewZoneOffsetRandomizer();

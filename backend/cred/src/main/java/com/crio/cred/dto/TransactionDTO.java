@@ -1,6 +1,7 @@
 package com.crio.cred.dto;
 
 import com.crio.cred.types.TransactionType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionDTO {
     private UUID transactionId;
     private BigDecimal amount;
