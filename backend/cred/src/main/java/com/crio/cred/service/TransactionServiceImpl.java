@@ -124,12 +124,20 @@ public class TransactionServiceImpl implements TransactionService {
         totalDue = totalDue.subtract(paymentAmount);
         statementDTO.setTotalDue(totalDue);
         statementDTO.setSettleDate(OffsetDateTime.now());
+        if (totalDue.compareTo(BigDecimal.ZERO) == 0) {
+            minDue = BigDecimal.ZERO;
+        } else {
+            minDue = totalDue.divide(BigDecimal.TEN, RoundingMode.CEILING);
+        }
+        statementDTO.setMinDue(minDue);
         cardStatementService.updateCardStatement(statementDTO);
 
         Transactions transaction = modelMapper.map(paymentTransactionDTO, Transactions.class);
-        transaction.setTransactionType(TransactionType.DEBIT);
+        transaction.setTransactionType(TransactionType.CREDIT);
         transaction.setTransactionDate(OffsetDateTime.now());
         transaction.setCardStatementId(cardStatement);
+        Vendor vendor = vendorService.getOrAddVendor("CRED");
+        transaction.setVendor(vendor);
 
         try {
             Currency currency = Currency.getInstance(paymentTransactionDTO.getCurrency());
