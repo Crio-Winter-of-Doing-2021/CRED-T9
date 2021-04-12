@@ -21,7 +21,9 @@ const defaultGetStatementState: GetStatementState = {
   inProgress: false,
   success: false,
   error: "",
-  statement: []
+  statement: [],
+  smartStatemenyByCategory: [],
+  smartStatementByVendor: []
 }
 
 const defaultPayBillState: PayBillState = {
@@ -134,7 +136,10 @@ function cardReducer(state = defaultState, action: any) {
       newState.inProgress = false
       newState.success = true
       newState.error = ""
-      newState.statement = action.payload.data.content
+      newState.statement = action.payload[0].data.content
+      newState.smartStatemenyByCategory = action.payload[1].data
+      newState.smartStatementByVendor = action.payload[2].data
+      console.log("PAYLOAD = " + action.payload.data)
       return {
         ...state,
         getStatementState: newState

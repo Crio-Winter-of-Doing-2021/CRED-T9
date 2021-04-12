@@ -10,17 +10,19 @@ import { getStatement } from '../actions/card-action'
 import { getFormattedDate, TransactionType } from '../util/Utils'
 import { CustomNavBrand } from './CustomNavBrand'
 import { ProgressBar } from 'react-bootstrap';
+import SimpleBarChart from './SimpleBarChart'
 
 interface Prop {
     match: any
     getStatementState: GetStatementState
-    getStatement:(id: number, year: number, month: number) => void
+    getStatement: (id: number, year: number, month: number) => void
 }
 
 interface State {
     cardId: number
     selectedMonth: number,
-    selectedYear: number
+    selectedYear: number,
+    showTable: boolean
 }
 
 class CardStatement extends Component<Prop, State> {
@@ -31,11 +33,12 @@ class CardStatement extends Component<Prop, State> {
         this.state = {
             cardId: cardId,
             selectedMonth: today.month(),
-            selectedYear: today.year()
+            selectedYear: today.year(),
+            showTable: true
         }
     }
     fetchStatement() {
-        this.props.getStatement(this.state.cardId, this.state.selectedYear, this.state.selectedMonth+1)
+        this.props.getStatement(this.state.cardId, this.state.selectedYear, this.state.selectedMonth + 1)
     }
     componentDidMount() {
         this.fetchStatement()
@@ -50,7 +53,7 @@ class CardStatement extends Component<Prop, State> {
         e.preventDefault();
         let today = dayjs()
         let month = this.state.selectedMonth
-        if(year >= today.year() && this.state.selectedMonth > today.month()) {
+        if (year >= today.year() && this.state.selectedMonth > today.month()) {
             month = today.month()
         }
         this.setState({
@@ -62,9 +65,16 @@ class CardStatement extends Component<Prop, State> {
         e.preventDefault();
         this.fetchStatement()
     }
+    toggleTableAndGraphView = (e: React.ChangeEvent<any>) => {
+        e.preventDefault();
+        const prevState = this.state.showTable
+        this.setState({
+            showTable: !prevState
+        })
+    }
     render() {
         const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+            "July", "August", "September", "October", "November", "December"
         ];
         let months = [];
         const currentDate = dayjs()
@@ -74,13 +84,13 @@ class CardStatement extends Component<Prop, State> {
             const disabled = this.state.selectedYear >= currentYear && i > currentMonth
             if (i === this.state.selectedMonth) {
                 months.push(<Dropdown.Item key={i.toString()}
-                    disabled = {disabled}
+                    disabled={disabled}
                     active>{monthNames[i]}
                 </Dropdown.Item>);
             } else {
                 months.push(
                     <Dropdown.Item key={i.toString()}
-                        disabled = {disabled}
+                        disabled={disabled}
                         onClick={this.selectMonth.bind(this, i)}>
                         {monthNames[i]}
                     </Dropdown.Item>
@@ -107,7 +117,7 @@ class CardStatement extends Component<Prop, State> {
         return (
             <div>
                 <Navbar expand="lg" sticky="top" variant="light">
-                    <CustomNavBrand/>
+                    <CustomNavBrand />
                 </Navbar>
                 <div className="statement-container">
                     <div className="statement-input">
@@ -122,27 +132,45 @@ class CardStatement extends Component<Prop, State> {
                             variant="primary"
                             onClick={this.handleSubmit.bind(this)}>
                             Submit
-                    </Button>
+                        </Button>
+                        <Button
+                            variant="info"
+                            onClick={this.toggleTableAndGraphView.bind(this)}>
+                            {this.state.showTable ? "Show graph" : "Show table"}
+                        </Button>
                     </div>
-                    {this.props.getStatementState.inProgress && 
+                    {this.props.getStatementState.inProgress &&
                         <ProgressBar className="progressbar" animated now={100} />}
                     {this.props.getStatementState.statement.length > 0 ?
-                        <Table striped bordered hover size="md" variant="dark">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Transaction id</th>
-                                <th>Vendor</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactions}
-                        </tbody>
-                    </Table>
-                    : <div className="statement-unavailable">
-                        Statement not available
-                    </div>}
+                        this.state.showTable ?
+                            <Table striped bordered hover size="md" variant="dark">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Transaction id</th>
+                                        <th>Vendor</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {transactions}
+                                </tbody>
+                            </Table>
+                            :
+                            <div className="graph-container">
+                                <div className="category-graph">
+                                    <SimpleBarChart axisName="category" barName="amount"
+                                        data={this.props.getStatementState.smartStatemenyByCategory} />
+                                    <div className="graph-info-text">Spend by category</div>
+                                </div>
+                                <div className="vendor-graph">
+                                    <SimpleBarChart axisName="vendor" barName="amount"
+                                        data={this.props.getStatementState.smartStatementByVendor} />
+                                    <div className="graph-info-text">Spend by vendor</div>
+                                </div>
+                            </div>
+                        : <div className="statement-unavailable"> Statement not available </div>
+                    }
                 </div>
             </div>
         )
